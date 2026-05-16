@@ -68,10 +68,11 @@ export default function HorizontalScroll({ onSelectProject }) {
     const trigger = ScrollTrigger.create({
       trigger: wrapperRef.current,
       start: 'top top',
-      end: () => `+=${trackRef.current.scrollWidth - window.innerWidth}`,
+      // Multiplier reduces the required scroll distance (makes it scroll faster)
+      end: () => `+=${(trackRef.current.scrollWidth - window.innerWidth) * 0.5}`,
       pin: true,
       animation: tween,
-      scrub: 1,
+      scrub: 1.5, // Smoother momentum catching up to the fast physical scroll
       invalidateOnRefresh: true,
     });
 

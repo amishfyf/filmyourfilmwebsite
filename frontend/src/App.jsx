@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
 import AdminPage from './components/AdminPage';
 import HorizontalScroll from './components/HorizontalScroll';
 import VideoModal from './components/VideoModal';
@@ -15,6 +17,19 @@ function App() {
   const isAdminRoute = normalizedPath === '/admin';
   const isWorkRoute = normalizedPath === '/work';
   const [activeProject, setActiveProject] = useState(null);
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      autoRaf: true,
+      lerp: 0.1, // Adjust for smoothness
+      duration: 1.2,
+      smoothWheel: true,
+    });
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
 
   if (isAdminRoute) {
     return <AdminPage />;
