@@ -32,24 +32,26 @@ html {
 }
 
 .bento-column {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 1.5rem;
-  flex: 0 0 100vw;
-  width: 100vw;
+  flex: 0 0 auto;
   height: 100vh;
   position: relative;
 }
 
 .bento-column.full {
+  width: 100vw;
   justify-content: stretch;
   align-items: stretch;
 }
 
 .bento-column.half-stack {
-  align-items: center;
-  padding: 7rem 5vw 3rem;
+  align-items: stretch;
+  width: min(52vw, 820px);
+  padding: 7rem 0 1.5rem;
 }
 
 .bento-card {
@@ -78,7 +80,7 @@ html {
 }
 
 .bento-column.half-stack .bento-card {
-  width: min(52vw, 820px);
+  width: 100%;
   height: calc((100vh - 10rem) / 2);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
 }
@@ -218,14 +220,15 @@ html {
 }
 
 @media (max-width: 900px) {
-  .bento-column.half-stack .bento-card {
+  .bento-column.half-stack {
     width: min(68vw, 720px);
   }
 }
 
 @media (max-width: 720px) {
   .bento-column.half-stack {
-    padding: 6rem 1rem 1rem;
+    width: calc(100vw - 2rem);
+    padding: 6rem 0 1rem;
     gap: 1rem;
   }
 
