@@ -2,6 +2,7 @@ import { useState } from 'react';
 import AdminPage from './components/AdminPage';
 import HorizontalScroll from './components/HorizontalScroll';
 import VideoModal from './components/VideoModal';
+import WorkPage from './components/WorkPage';
 import './App.css';
 
 const getNormalizedPath = () => {
@@ -10,11 +11,17 @@ const getNormalizedPath = () => {
 };
 
 function App() {
-  const isAdminRoute = getNormalizedPath().toLowerCase() === '/admin';
+  const normalizedPath = getNormalizedPath().toLowerCase();
+  const isAdminRoute = normalizedPath === '/admin';
+  const isWorkRoute = normalizedPath === '/work';
   const [activeProject, setActiveProject] = useState(null);
 
   if (isAdminRoute) {
     return <AdminPage />;
+  }
+
+  if (isWorkRoute) {
+    return <WorkPage />;
   }
 
   return (
@@ -29,7 +36,7 @@ function App() {
         </a>
         <nav className="site-nav">
           <a href="#home">Home</a>
-          <a href="#work">Work</a>
+          <a href="/work">Work</a>
           <a href="#contact">Contact</a>
         </nav>
       </header>

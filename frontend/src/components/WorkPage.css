@@ -1,0 +1,305 @@
+.work-page-shell {
+  --work-gap: clamp(1rem, 1.8vw, 1.45rem);
+  --work-radius: 22px;
+  min-height: 100vh;
+  background: #050505;
+  color: #fff;
+}
+
+.site-header-work {
+  background: linear-gradient(180deg, rgba(5, 5, 5, 0.9) 0%, rgba(5, 5, 5, 0.45) 70%, transparent 100%);
+}
+
+.site-nav a[aria-current='page'] {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.work-page-orb {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.work-page-main {
+  width: min(1480px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: clamp(6.5rem, 7vw, 7.5rem) 0 5rem;
+  display: grid;
+  gap: clamp(1.75rem, 3vw, 3rem);
+}
+
+.work-page-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--work-gap);
+  align-items: start;
+  scroll-margin-top: 6rem;
+}
+
+.work-project-card,
+.work-empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  height: 100%;
+}
+
+.work-project-card {
+  cursor: pointer;
+}
+
+.work-project-card-left.work-project-card-compact {
+  grid-column: 1 / span 4;
+}
+
+.work-project-card-right.work-project-card-wide {
+  grid-column: 5 / -1;
+}
+
+.work-project-card-left.work-project-card-wide {
+  grid-column: 1 / span 8;
+}
+
+.work-project-card-right.work-project-card-compact {
+  grid-column: 9 / -1;
+}
+
+.work-project-card-feature {
+  grid-column: 3 / span 8;
+}
+
+.work-project-media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--work-radius);
+  background: #111;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  flex-grow: 1; /* allow it to stretch down to the bottom of the card and fill the row */
+  min-height: 0; 
+}
+
+.work-project-card-wide .work-project-media,
+.work-project-card-feature .work-project-media {
+  aspect-ratio: 16 / 9;
+}
+
+.work-project-card-compact .work-project-media {
+  /* Let the compact media stretch to match the row instead of dictating its own block aspect ratio */
+  height: 100%;
+}
+
+.work-project-copy,
+.work-page-contact,
+.work-page-footer,
+.work-page-footer-nav {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.work-project-title,
+.work-project-meta,
+.work-empty-card h2,
+.work-empty-card p,
+.work-page-contact-title,
+.work-page-footer-brand {
+  margin: 0;
+}
+
+.work-project-title {
+  font-size: clamp(1.05rem, 1.45vw, 1.4rem);
+  line-height: 1.05;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.work-project-meta {
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.82rem;
+  line-height: 1.2;
+}
+
+.work-empty-state {
+  grid-column: 1 / -1;
+  place-items: center;
+  min-height: 50vh;
+}
+
+.work-empty-card {
+  width: min(480px, 100%);
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  display: grid;
+  gap: 0.75rem;
+}
+
+.work-page-contact {
+  margin-top: clamp(2rem, 4vw, 4rem);
+  padding: clamp(1rem, 3vw, 2rem) 0 0;
+  gap: clamp(2rem, 3vw, 3rem);
+}
+
+.work-page-contact-copy {
+  position: relative;
+  width: min(860px, 100%);
+}
+
+.work-page-contact-title {
+  position: relative;
+  z-index: 1;
+  max-width: 10ch;
+  font-size: clamp(3rem, 7vw, 6.2rem);
+  line-height: 0.94;
+  letter-spacing: -0.06em;
+  font-weight: 400;
+}
+
+.work-page-contact-title span {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+  font-weight: 700;
+}
+
+.work-page-contact-blob {
+  position: absolute;
+  right: 12%;
+  top: 50%;
+  width: clamp(120px, 16vw, 180px);
+  height: clamp(72px, 10vw, 112px);
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 40%, rgba(255, 255, 255, 0.95), rgba(64, 153, 255, 0.85) 55%, rgba(14, 78, 214, 0.18) 100%);
+  filter: blur(10px);
+  transform: translateY(-50%) rotate(-18deg);
+}
+
+.work-page-footer {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 1rem;
+  padding-top: clamp(3rem, 5vw, 5rem);
+}
+
+.work-page-footer-brand {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.work-page-footer-nav {
+  grid-auto-flow: column;
+  gap: 1.5rem;
+}
+
+.work-page-footer-nav a {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .work-page-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .work-project-card,
+  .work-project-card-left.work-project-card-compact,
+  .work-project-card-right.work-project-card-wide,
+  .work-project-card-left.work-project-card-wide,
+  .work-project-card-right.work-project-card-compact,
+  .work-project-card-feature {
+    grid-column: span 1;
+  }
+  
+  .work-project-card .work-project-media {
+    aspect-ratio: 16 / 9;
+    height: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .site-header-work {
+    padding: 0.9rem 1rem;
+  }
+
+  .site-header-work .site-nav {
+    display: none;
+  }
+
+  .work-page-orb {
+    display: inline-flex;
+  }
+
+  .work-page-main {
+    width: min(100%, calc(100% - 1rem));
+    padding-top: 5.5rem;
+    gap: 2rem;
+  }
+
+  .work-page-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .work-project-card,
+  .work-project-card-left.work-project-card-compact,
+  .work-project-card-right.work-project-card-wide,
+  .work-project-card-left.work-project-card-wide,
+  .work-project-card-right.work-project-card-compact,
+  .work-project-card-feature {
+    grid-column: 1 / -1;
+  }
+
+  .work-project-media,
+  .work-project-card .work-project-media {
+    aspect-ratio: 16 / 10;
+  }
+
+  .work-project-title {
+    font-size: 1rem;
+  }
+
+  .work-project-meta {
+    font-size: 0.76rem;
+  }
+
+  .work-page-contact {
+    padding-top: 1rem;
+  }
+
+  .work-page-contact-copy,
+  .work-empty-card {
+    width: 100%;
+  }
+
+  .work-page-contact-title {
+    max-width: 9ch;
+    font-size: clamp(2.6rem, 15vw, 4.8rem);
+  }
+
+  .work-page-contact-blob {
+    right: 6%;
+    width: 96px;
+    height: 60px;
+  }
+
+  .work-page-footer {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .work-page-footer-nav {
+    grid-auto-flow: row;
+    gap: 1rem;
+  }
+}
