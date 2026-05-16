@@ -47,12 +47,23 @@ const getProjectVideoUrl = (project) => {
   return '';
 };
 
+const getVimeoPreviewUrl = (project) => {
+  const vimeoId = String(project?.vimeoId || project?.raw?.vimeoId || '').trim();
+
+  if (!vimeoId) {
+    return '';
+  }
+
+  return `https://player.vimeo.com/video/${vimeoId}?background=1&autoplay=1&loop=1&muted=1&autopause=0&controls=0&title=0&byline=0&portrait=0&dnt=1`;
+};
+
 const normalizeProjects = (projects) => {
   return projects.map((project, index) => ({
     id: getProjectId(project, index),
     title: project.title,
     style: project.gridStyle === 'full' ? 'full' : project.gridStyle,
     thumbnailUrl: project.thumbnailUrl,
+    vimeoId: project.vimeoId,
     sourceType: getProjectSourceType(project),
     videoUrl: getProjectVideoUrl(project),
     raw: project,
@@ -227,7 +238,8 @@ export default function HorizontalScroll({ onSelectProject }) {
               id={index === 0 ? 'work' : undefined}
             >
               {panel.items.map((item) => {
-                const shouldRenderVideoPreview = item.sourceType === 'direct' && item.videoUrl;
+                const shouldRenderDirectPreview = item.sourceType === 'direct' && item.videoUrl;
+                const vimeoPreviewUrl = item.sourceType === 'vimeo' ? getVimeoPreviewUrl(item) : '';
 
                 return (
                   <div
@@ -236,8 +248,19 @@ export default function HorizontalScroll({ onSelectProject }) {
                     onClick={() => onSelectProject?.(item.raw)}
                     role="presentation"
                   >
-                    {shouldRenderVideoPreview ? (
+                    {shouldRenderDirectPreview ? (
                       <video autoPlay className="bento-card-media" loop muted playsInline preload="metadata" src={item.videoUrl} />
+                    ) : vimeoPreviewUrl ? (
+                      <div aria-hidden="true" className="bento-card-media bento-card-media-frame">
+                        <iframe
+                          allow="autoplay; fullscreen; picture-in-picture"
+                          className="bento-card-media-embed"
+                          loading="lazy"
+                          src={vimeoPreviewUrl}
+                          tabIndex="-1"
+                          title={`${item.title} preview`}
+                        ></iframe>
+                      </div>
                     ) : item.thumbnailUrl ? (
                       <img alt={`${item.title} thumbnail`} className="bento-card-media" loading="lazy" src={item.thumbnailUrl} />
                     ) : (
