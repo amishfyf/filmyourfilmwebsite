@@ -27,7 +27,22 @@ function App() {
       smoothWheel: true,
     });
 
+    // Handle smooth scrolling for anchor links to prevent the `#contact` URL jump
+    const handleAnchorClick = (e) => {
+      const target = e.target.closest('a');
+      if (!target) return;
+      
+      const href = target.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        e.preventDefault();
+        lenis.scrollTo(href);
+      }
+    };
+
+    document.addEventListener('click', handleAnchorClick);
+
     return () => {
+      document.removeEventListener('click', handleAnchorClick);
       lenis.destroy();
     };
   }, []);
