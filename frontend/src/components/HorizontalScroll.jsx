@@ -59,6 +59,75 @@ const normalizeProjects = (projects) => {
   }));
 };
 
+const buildExplicitPanels = (projects) => {
+  const panels = [];
+  let tempStack = [];
+
+  projects.forEach((project) => {
+    if (project.style === 'full') {
+      if (tempStack.length === 1) {
+        panels.push({ type: 'full', items: [...tempStack] });
+        tempStack = [];
+      } else if (tempStack.length === 2) {
+        panels.push({ type: 'half-stack', items: [...tempStack] });
+        tempStack = [];
+      }
+
+      panels.push({ type: 'full', items: [project] });
+      return;
+    }
+
+    tempStack.push(project);
+
+    if (tempStack.length === 2) {
+      panels.push({ type: 'half-stack', items: [...tempStack] });
+      tempStack = [];
+    }
+  });
+
+  if (tempStack.length === 1) {
+    panels.push({ type: 'full', items: [...tempStack] });
+  } else if (tempStack.length === 2) {
+    panels.push({ type: 'half-stack', items: [...tempStack] });
+  }
+
+  return panels;
+};
+
+const buildAutomaticPanels = (projects) => {
+  const panels = [];
+  let cursor = 0;
+  let shouldRenderFullPanel = true;
+
+  while (cursor < projects.length) {
+    const remaining = projects.length - cursor;
+
+    if (shouldRenderFullPanel || remaining === 1) {
+      panels.push({ type: 'full', items: [projects[cursor]] });
+      cursor += 1;
+    } else {
+      panels.push({
+        type: 'half-stack',
+        items: projects.slice(cursor, cursor + 2),
+      });
+      cursor += Math.min(2, remaining);
+    }
+
+    shouldRenderFullPanel = !shouldRenderFullPanel;
+  }
+
+  return panels;
+};
+
+const buildPanels = (projects) => {
+  if (!projects.length) {
+    return [];
+  }
+
+  const hasExplicitStacking = projects.some((project) => project.style !== 'full');
+  return hasExplicitStacking ? buildExplicitPanels(projects) : buildAutomaticPanels(projects);
+};
+
 export default function HorizontalScroll({ onSelectProject }) {
   const wrapperRef = useRef(null);
   const trackRef = useRef(null);
@@ -92,27 +161,8 @@ export default function HorizontalScroll({ onSelectProject }) {
     return () => controller.abort();
   }, []);
 
-  const columns = [];
-  let tempStack = [];
-
-  projects.forEach((project) => {
-    if (project.style === 'full') {
-      columns.push({ type: 'full', items: [project] });
-    } else {
-      tempStack.push(project);
-
-      if (tempStack.length === 2) {
-        columns.push({ type: 'half-stack', items: [...tempStack] });
-        tempStack = [];
-      }
-    }
-  });
-
-  if (tempStack.length) {
-    columns.push({ type: 'half-stack', items: [...tempStack] });
-  }
-
-  const hasTrackContent = status === 'success' && columns.length > 0;
+  const panels = buildPanels(projects);
+  const hasTrackContent = status === 'success' && panels.length > 0;
 
   useGSAP(() => {
     if (!wrapperRef.current || !trackRef.current || !hasTrackContent) {
@@ -156,7 +206,7 @@ export default function HorizontalScroll({ onSelectProject }) {
   });
 
   return (
-    <div className="scroll-wrapper" id="work" ref={wrapperRef}>
+    <div className="scroll-wrapper" ref={wrapperRef}>
       <div className="horizontal-track" ref={trackRef}>
         <section className="hero-section horizontal-panel" id="home">
           <p className="hero-kicker">Cinematic systems for brands and stories</p>
@@ -169,11 +219,15 @@ export default function HorizontalScroll({ onSelectProject }) {
           </p>
         </section>
 
-        {status === 'success' && columns.length ? (
-          columns.map((col, index) => (
-            <div key={`${col.type}-${index}`} className={`bento-column ${col.type}`}>
-              {col.items.map((item) => {
-                const shouldRenderVideoPreview = item.sourceType === 'direct' && !item.thumbnailUrl && item.videoUrl;
+        {status === 'success' && panels.length ? (
+          panels.map((panel, index) => (
+            <section
+              key={`${panel.type}-${index}`}
+              className={`showcase-panel bento-column ${panel.type}`}
+              id={index === 0 ? 'work' : undefined}
+            >
+              {panel.items.map((item) => {
+                const shouldRenderVideoPreview = item.sourceType === 'direct' && item.videoUrl;
 
                 return (
                   <div
@@ -185,7 +239,7 @@ export default function HorizontalScroll({ onSelectProject }) {
                     {shouldRenderVideoPreview ? (
                       <video autoPlay className="bento-card-media" loop muted playsInline preload="metadata" src={item.videoUrl} />
                     ) : item.thumbnailUrl ? (
-                      <img alt={`${item.title} thumbnail`} className="bento-card-media" src={item.thumbnailUrl} />
+                      <img alt={`${item.title} thumbnail`} className="bento-card-media" loading="lazy" src={item.thumbnailUrl} />
                     ) : (
                       <div className="bento-card-fallback" />
                     )}
@@ -194,7 +248,9 @@ export default function HorizontalScroll({ onSelectProject }) {
                     <div className="bento-card-title-wrap">
                       <p className="bento-card-meta">
                         {item.sourceType === 'direct'
-                          ? 'Direct video'
+                          ? panel.type === 'full'
+                            ? 'Featured film'
+                            : 'Stacked film'
                           : item.sourceType === 'vimeo'
                             ? 'Vimeo project'
                             : 'Linked media'}
@@ -204,7 +260,7 @@ export default function HorizontalScroll({ onSelectProject }) {
                   </div>
                 );
               })}
-            </div>
+            </section>
           ))
         ) : (
           <section className="horizontal-empty horizontal-panel" aria-live="polite">
@@ -213,7 +269,7 @@ export default function HorizontalScroll({ onSelectProject }) {
               <p>
                 {status === 'error'
                   ? errorMessage
-                  : 'Publish videos through the backend admin routes to populate this horizontal grid.'}
+                  : 'Publish videos through the hidden /Admin page to populate this showcase.'}
               </p>
             </div>
           </section>
