@@ -1,37 +1,106 @@
-import { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import './styles.css';
+import './contact.css';
 
 export default function Contact() {
   const containerRef = useRef(null);
-  const blobRef = useRef(null);
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [status, setStatus] = useState('idle');
 
+  // Subtle entrance animation
   useGSAP(() => {
-    if (!containerRef.current || !blobRef.current) {
-      return undefined;
-    }
-
-    const xTo = gsap.quickTo(blobRef.current, 'x', { duration: 0.6, ease: 'power3' });
-    const yTo = gsap.quickTo(blobRef.current, 'y', { duration: 0.6, ease: 'power3' });
-
-    const moveBlob = (event) => {
-      xTo(event.clientX - 250);
-      yTo(event.clientY - 250);
-    };
-
-    const container = containerRef.current;
-    container.addEventListener('mousemove', moveBlob);
-
-    return () => container.removeEventListener('mousemove', moveBlob);
+    gsap.fromTo(
+      '.animate-up',
+      { y: 50, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out', scrollTrigger: { trigger: containerRef.current } }
+    );
   }, { scope: containerRef });
 
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('loading');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setStatus('success');
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        setStatus('error');
+      }
+    } catch (error) {
+      console.error('Submission failed', error);
+      setStatus('error');
+    }
+  };
+
   return (
-    <section className="contact-section" id="contact" ref={containerRef}>
-      <div className="blob" ref={blobRef}></div>
-      <h1 className="contact-text">
-        Got a project in mind? <span className="serif-italic">Let's talk.</span>
-      </h1>
+    <section className="contact-wrapper" id="contact" ref={containerRef}>
+      <div className="contact-left animate-up">
+        <h1 className="contact-heading">
+          Let's make<br />something together.
+        </h1>
+        
+        <form className="contact-form" onSubmit={handleSubmit}>
+          <div className="input-row">
+            <div className="input-group">
+              <input type="text" id="name" placeholder=" " value={formData.name} onChange={handleChange} required />
+              <label htmlFor="name">Name</label>
+            </div>
+            <div className="input-group">
+              <input type="email" id="email" placeholder=" " value={formData.email} onChange={handleChange} required />
+              <label htmlFor="email">Email</label>
+            </div>
+          </div>
+          
+          <div className="input-group">
+            <textarea id="message" rows="4" placeholder=" " value={formData.message} onChange={handleChange} required></textarea>
+            <label htmlFor="message">Message</label>
+          </div>
+          
+          <button type="submit" className="submit-btn" disabled={status === 'loading'}>
+            {status === 'loading' ? 'Sending...' : status === 'success' ? 'Sent!' : 'Submit'}
+          </button>
+          
+          {status === 'error' && <p style={{ color: 'red', marginTop: '1rem' }}>Something went wrong. Please try again.</p>}
+        </form>
+      </div>
+
+      <div className="contact-right animate-up">
+        <div className="bento-grid">
+          <a href="mailto:hello@creatiwe.studio" className="bento-card card-email">
+            <div className="card-content">
+              <h3>Email</h3>
+              <p>hello@creatiwe.studio</p>
+            </div>
+          </a>
+
+          <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="bento-card card-linkedin">
+            <div className="card-content">
+              <h3>LinkedIn</h3>
+              <p>@akshaancreative</p>
+            </div>
+          </a>
+
+          <a href="https://vimeo.com" target="_blank" rel="noreferrer" className="bento-card card-vimeo">
+            <div className="card-content">
+              <h3>Vimeo</h3>
+              <p>@creatiwe</p>
+            </div>
+          </a>
+        </div>
+      </div>
     </section>
   );
 }
+

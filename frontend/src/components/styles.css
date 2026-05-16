@@ -251,6 +251,20 @@ html {
 }
 
 @media (max-width: 720px) {
+  .horizontal-track {
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    overflow-x: hidden;
+  }
+
+  .horizontal-panel,
+  .showcase-panel {
+    width: 100vw;
+    height: auto;
+    min-height: 100vh;
+  }
+
   .bento-column.half-stack {
     width: calc(100vw - 2rem);
     padding: var(--panel-gutter);

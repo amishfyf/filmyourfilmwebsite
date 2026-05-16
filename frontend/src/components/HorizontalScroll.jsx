@@ -50,37 +50,42 @@ export default function HorizontalScroll({ onSelectProject }) {
       return undefined;
     }
 
-    const getScrollAmount = () => {
-      const trackWidth = trackRef.current.scrollWidth;
-      return -(trackWidth - window.innerWidth);
-    };
+    const mm = gsap.matchMedia();
 
-    if (trackRef.current.scrollWidth <= window.innerWidth) {
-      gsap.set(trackRef.current, { x: 0 });
-      return undefined;
-    }
+    mm.add('(min-width: 721px)', () => {
+      const getScrollAmount = () => {
+        const trackWidth = trackRef.current.scrollWidth;
+        return -(trackWidth - window.innerWidth);
+      };
 
-    const tween = gsap.to(trackRef.current, {
-      x: getScrollAmount,
-      ease: 'none',
+      if (trackRef.current.scrollWidth <= window.innerWidth) {
+        gsap.set(trackRef.current, { x: 0 });
+        return undefined;
+      }
+
+      const tween = gsap.to(trackRef.current, {
+        x: getScrollAmount,
+        ease: 'none',
+      });
+
+      const trigger = ScrollTrigger.create({
+        trigger: wrapperRef.current,
+        start: 'top top',
+        end: () => `+=${(trackRef.current.scrollWidth - window.innerWidth) * 0.5}`,
+        pin: true,
+        animation: tween,
+        scrub: 1.5,
+        invalidateOnRefresh: true,
+      });
+
+      return () => {
+        trigger.kill();
+        tween.kill();
+        gsap.set(trackRef.current, { clearProps: 'all' });
+      };
     });
 
-    const trigger = ScrollTrigger.create({
-      trigger: wrapperRef.current,
-      start: 'top top',
-      // Multiplier reduces the required scroll distance (makes it scroll faster)
-      end: () => `+=${(trackRef.current.scrollWidth - window.innerWidth) * 0.5}`,
-      pin: true,
-      animation: tween,
-      scrub: 1.5, // Smoother momentum catching up to the fast physical scroll
-      invalidateOnRefresh: true,
-    });
-
-    return () => {
-      trigger.kill();
-      tween.kill();
-      gsap.set(trackRef.current, { clearProps: 'x' });
-    };
+    return () => mm.revert();
   }, {
     scope: wrapperRef,
     dependencies: [hasTrackContent, projects],
@@ -140,10 +145,6 @@ export default function HorizontalScroll({ onSelectProject }) {
             </div>
           </section>
         )}
-
-        <div className="contact-panel">
-          <Contact />
-        </div>
       </div>
     </div>
   );

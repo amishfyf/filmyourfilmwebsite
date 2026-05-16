@@ -1,0 +1,189 @@
+/* Main Layout */
+.contact-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #050505;
+  color: #ffffff;
+  padding: 8vh 5vw;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+  gap: 4vw;
+}
+
+.contact-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 50%;
+}
+
+.contact-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Typography */
+.contact-heading {
+  font-size: 4.5rem;
+  line-height: 1.1;
+  font-weight: 500;
+  margin-bottom: 3rem;
+  letter-spacing: -0.02em;
+}
+
+/* Form Styles */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 80%;
+}
+
+.input-row {
+  display: flex;
+  gap: 2rem;
+}
+
+.input-group {
+  position: relative;
+  flex: 1;
+}
+
+/* Floating Label Magic */
+.input-group input,
+.input-group textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #333;
+  color: #fff;
+  font-size: 1.2rem;
+  padding: 0.5rem 0;
+  outline: none;
+  transition: border-color 0.3s ease;
+  font-family: inherit;
+  resize: none;
+}
+
+.input-group label {
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  color: #666;
+  font-size: 1.2rem;
+  pointer-events: none;
+  transition: 0.3s ease all;
+}
+
+/* When input is focused, or has text inside (using the placeholder-shown hack) */
+.input-group input:focus,
+.input-group textarea:focus {
+  border-bottom-color: #fff;
+}
+
+.input-group input:focus ~ label,
+.input-group input:not(:placeholder-shown) ~ label,
+.input-group textarea:focus ~ label,
+.input-group textarea:not(:placeholder-shown) ~ label {
+  top: -1.2rem;
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+/* Submit Button */
+.submit-btn {
+  align-self: flex-start;
+  background-color: #1a1a1a;
+  color: #fff;
+  border: 1px solid #333;
+  padding: 1rem 3rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.submit-btn:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+/* Bento Grid */
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1.5rem;
+  height: 70vh; /* Adjust based on preference */
+}
+
+.bento-card {
+  background-color: #141414; /* Dark gray */
+  border-radius: 20px;
+  padding: 2.5rem;
+  text-decoration: none;
+  color: #fff;
+  display: flex;
+  align-items: flex-end; /* Pushes text to the bottom */
+  transition: background-color 0.4s ease, transform 0.3s ease;
+}
+
+.card-content h3 {
+  font-size: 2rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+}
+
+.card-content p {
+  color: #aaa;
+  margin: 0;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+/* Specific Grid Placements & Hover Colors matching the video */
+.card-email {
+  grid-area: 1 / 1 / 2 / 2;
+}
+.card-email:hover {
+  background-color: #4a5d3f; /* Muted Green */
+}
+
+.card-linkedin {
+  grid-area: 1 / 2 / 2 / 3;
+}
+.card-linkedin:hover {
+  background-color: #a85836; /* Terracotta/Orange */
+}
+
+.card-vimeo {
+  grid-area: 2 / 1 / 3 / 3; /* Spans full width of the bottom row */
+}
+.card-vimeo:hover {
+  background-color: #4353b3; /* Vibrant Blue */
+}
+
+.bento-card:hover .card-content p {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .contact-wrapper {
+    flex-direction: column;
+    padding: 12vh 5vw;
+  }
+  .contact-left, .contact-right {
+    max-width: 100%;
+  }
+  .bento-grid {
+    height: 50vh;
+    margin-top: 3rem;
+  }
+}
+
