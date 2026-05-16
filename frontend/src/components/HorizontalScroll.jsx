@@ -139,6 +139,71 @@ const buildPanels = (projects) => {
   return hasExplicitStacking ? buildExplicitPanels(projects) : buildAutomaticPanels(projects);
 };
 
+function ProjectPreviewMedia({ item }) {
+  const containerRef = useRef(null);
+  const [isMediaActive, setIsMediaActive] = useState(false);
+
+  useEffect(() => {
+    const node = containerRef.current;
+
+    if (!node || typeof IntersectionObserver === 'undefined') {
+      setIsMediaActive(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        setIsMediaActive(Boolean(entry?.isIntersecting));
+      },
+      {
+        root: null,
+        rootMargin: '15% 35%',
+        threshold: 0.01,
+      }
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const shouldRenderDirectPreview = isMediaActive && item.sourceType === 'direct' && item.videoUrl;
+  const vimeoPreviewUrl = isMediaActive && item.sourceType === 'vimeo' ? getVimeoPreviewUrl(item) : '';
+
+  return (
+    <div className="bento-card-media-shell" ref={containerRef}>
+      {shouldRenderDirectPreview ? (
+        <video
+          autoPlay
+          className="bento-card-media"
+          loop
+          muted
+          playsInline
+          poster={item.thumbnailUrl || undefined}
+          preload="metadata"
+          src={item.videoUrl}
+        />
+      ) : vimeoPreviewUrl ? (
+        <div aria-hidden="true" className="bento-card-media bento-card-media-frame">
+          <iframe
+            allow="autoplay; fullscreen; picture-in-picture"
+            className="bento-card-media-embed"
+            loading="lazy"
+            src={vimeoPreviewUrl}
+            tabIndex="-1"
+            title={`${item.title} preview`}
+          ></iframe>
+        </div>
+      ) : item.thumbnailUrl ? (
+        <img alt={`${item.title} thumbnail`} className="bento-card-media" loading="lazy" src={item.thumbnailUrl} />
+      ) : (
+        <div className="bento-card-fallback" />
+      )}
+    </div>
+  );
+}
+
 export default function HorizontalScroll({ onSelectProject }) {
   const wrapperRef = useRef(null);
   const trackRef = useRef(null);
@@ -238,9 +303,6 @@ export default function HorizontalScroll({ onSelectProject }) {
               id={index === 0 ? 'work' : undefined}
             >
               {panel.items.map((item) => {
-                const shouldRenderDirectPreview = item.sourceType === 'direct' && item.videoUrl;
-                const vimeoPreviewUrl = item.sourceType === 'vimeo' ? getVimeoPreviewUrl(item) : '';
-
                 return (
                   <div
                     key={item.id}
@@ -248,24 +310,7 @@ export default function HorizontalScroll({ onSelectProject }) {
                     onClick={() => onSelectProject?.(item.raw)}
                     role="presentation"
                   >
-                    {shouldRenderDirectPreview ? (
-                      <video autoPlay className="bento-card-media" loop muted playsInline preload="metadata" src={item.videoUrl} />
-                    ) : vimeoPreviewUrl ? (
-                      <div aria-hidden="true" className="bento-card-media bento-card-media-frame">
-                        <iframe
-                          allow="autoplay; fullscreen; picture-in-picture"
-                          className="bento-card-media-embed"
-                          loading="lazy"
-                          src={vimeoPreviewUrl}
-                          tabIndex="-1"
-                          title={`${item.title} preview`}
-                        ></iframe>
-                      </div>
-                    ) : item.thumbnailUrl ? (
-                      <img alt={`${item.title} thumbnail`} className="bento-card-media" loading="lazy" src={item.thumbnailUrl} />
-                    ) : (
-                      <div className="bento-card-fallback" />
-                    )}
+                    <ProjectPreviewMedia item={item} />
 
                     <div className="bento-card-overlay" />
                     <div className="bento-card-title-wrap">

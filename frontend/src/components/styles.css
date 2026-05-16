@@ -104,6 +104,11 @@ html {
   object-fit: cover;
 }
 
+.bento-card-media-shell {
+  position: absolute;
+  inset: 0;
+}
+
 .bento-card-media-frame {
   overflow: hidden;
   background: #000;
