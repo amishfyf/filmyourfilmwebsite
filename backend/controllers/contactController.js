@@ -20,7 +20,7 @@ exports.sendContactEmail = async (req, res) => {
 
     const mailOptions = {
       from: email,
-      to: process.env.EMAIL_USER || 'hello@creatiwe.studio',
+      to: process.env.EMAIL_USER || 'hello@filmyourfilm.com',
       subject: `New Contact Submission from ${name}`,
       text: `You have received a new message from your website:\n\nName: ${name}\nEmail: ${email}\nMessage:\n${message}`,
     };

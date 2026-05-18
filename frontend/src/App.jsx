@@ -1,22 +1,22 @@
-import { useState, useEffect } from 'react';
-import Lenis from 'lenis';
-import 'lenis/dist/lenis.css';
-import AdminPage from './components/AdminPage';
-import HorizontalScroll from './components/HorizontalScroll';
-import Contact from './components/Contact';
-import VideoModal from './components/VideoModal';
-import WorkPage from './components/WorkPage';
-import './App.css';
+import { useState, useEffect } from "react";
+import Lenis from "lenis";
+import "lenis/dist/lenis.css";
+import AdminPage from "./components/AdminPage";
+import HorizontalScroll from "./components/HorizontalScroll";
+import Contact from "./components/Contact";
+import VideoModal from "./components/VideoModal";
+import WorkPage from "./components/WorkPage";
+import "./App.css";
 
 const getNormalizedPath = () => {
-  const pathname = window.location.pathname.replace(/\/+$/, '');
-  return pathname || '/';
+  const pathname = window.location.pathname.replace(/\/+$/, "");
+  return pathname || "/";
 };
 
 function App() {
   const normalizedPath = getNormalizedPath().toLowerCase();
-  const isAdminRoute = normalizedPath === '/admin';
-  const isWorkRoute = normalizedPath === '/work';
+  const isAdminRoute = normalizedPath === "/admin";
+  const isWorkRoute = normalizedPath === "/work";
   const [activeProject, setActiveProject] = useState(null);
 
   useEffect(() => {
@@ -29,20 +29,20 @@ function App() {
 
     // Handle smooth scrolling for anchor links to prevent the `#contact` URL jump
     const handleAnchorClick = (e) => {
-      const target = e.target.closest('a');
+      const target = e.target.closest("a");
       if (!target) return;
-      
-      const href = target.getAttribute('href');
-      if (href && href.startsWith('#')) {
+
+      const href = target.getAttribute("href");
+      if (href && href.startsWith("#")) {
         e.preventDefault();
         lenis.scrollTo(href);
       }
     };
 
-    document.addEventListener('click', handleAnchorClick);
+    document.addEventListener("click", handleAnchorClick);
 
     return () => {
-      document.removeEventListener('click', handleAnchorClick);
+      document.removeEventListener("click", handleAnchorClick);
       lenis.destroy();
     };
   }, []);
@@ -60,7 +60,7 @@ function App() {
       <header className="site-header">
         <a className="site-logo" href="#home">
           <img
-            alt="Creatiwe Studio"
+            alt="Film Your Film"
             className="site-logo-mark"
             src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
           />
@@ -77,7 +77,10 @@ function App() {
         <Contact />
       </main>
 
-      <VideoModal project={activeProject} onClose={() => setActiveProject(null)} />
+      <VideoModal
+        project={activeProject}
+        onClose={() => setActiveProject(null)}
+      />
     </div>
   );
 }
