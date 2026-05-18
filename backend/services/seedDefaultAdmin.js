@@ -20,6 +20,7 @@ const seedDefaultAdmin = async () => {
   console.log(`Seeded default admin account: ${defaultAdminName}`);
 
   if (!process.env.DEFAULT_ADMIN_PASSWORD) {
+    // wa
     console.log('Using fallback default admin password: change-this-admin-password');
   }
 
