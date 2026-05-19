@@ -137,12 +137,21 @@
   font-size: 0.8rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all 0.3s ease;
 }
 
 .video-modal-title {
-  margin-top: 0.35rem;
-  font-size: clamp(1.8rem, 3vw, 2.8rem);
-  line-height: 1;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all 0.3s ease;
+}
+
+.video-modal:hover .video-modal-label,
+.video-modal:hover .video-modal-title {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .video-modal-close {
@@ -396,6 +405,11 @@
 .admin-feedback {
   border-radius: 18px;
   padding: 1rem 1.1rem;
+}
+
+.admin-row-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .admin-empty-state {

@@ -333,8 +333,136 @@ const reorderProjects = async (req, res, next) => {
   }
 };
 
+const updateProject = async (req, res, next) => {
+  try {
+    const id = String(req.params.id || '').trim();
+
+    if (!id) {
+      return res.status(400).json({ message: 'Provide a valid project id.' });
+    }
+
+    const {
+      title: rawTitle,
+      thumbnailUrl: rawThumbnailUrl,
+      gridStyle: rawGridStyle,
+      videoUrl: rawVideoUrl,
+      vimeoId: rawVimeoId,
+      vimeoUrl: rawVimeoUrl,
+    } = req.body;
+
+    const update = {};
+
+    if (rawTitle !== undefined) {
+      update.title = String(rawTitle || '').trim();
+    }
+
+    if (rawThumbnailUrl !== undefined) {
+      update.thumbnailUrl = String(rawThumbnailUrl || '').trim();
+    }
+
+    if (rawGridStyle !== undefined) {
+      const normalized = normalizeGridStyle(rawGridStyle);
+      if (!normalized) {
+        return res.status(400).json({ message: 'gridStyle must be one of: full, half-top, half-bottom.' });
+      }
+      update.gridStyle = normalized;
+    }
+
+    if (rawVideoUrl !== undefined || rawVimeoId !== undefined || rawVimeoUrl !== undefined) {
+      const sourceInput = resolveSourceInput({ videoUrl: rawVideoUrl, vimeoUrl: rawVimeoUrl, vimeoId: rawVimeoId });
+
+      if (!sourceInput) {
+        return res.status(400).json({ message: 'Provide a valid URL or a numeric Vimeo ID.' });
+      }
+
+      const duplicateQuery = sourceInput.sourceType === 'vimeo'
+        ? {
+            $or: [
+              { sourceType: 'vimeo', vimeoId: sourceInput.vimeoId },
+              { videoUrl: sourceInput.videoUrl },
+            ],
+          }
+        : { videoUrl: sourceInput.videoUrl };
+
+      const existingProject = await Project.findOne({
+        ...duplicateQuery,
+        _id: { $ne: id },
+      }).select('_id').lean();
+
+      if (existingProject) {
+        return res.status(409).json({ message: 'That video already exists in the portfolio.' });
+      }
+
+      update.sourceType = sourceInput.sourceType;
+      update.videoUrl = sourceInput.videoUrl;
+      update.vimeoId = sourceInput.vimeoId || undefined;
+
+      if (sourceInput.sourceType === 'vimeo') {
+        let oEmbedData = null;
+
+        try {
+          const response = await axios.get(VIMEO_OEMBED_URL, {
+            params: { url: sourceInput.videoUrl },
+            timeout: 10000,
+          });
+          oEmbedData = response.data;
+        } catch (error) {
+          oEmbedData = null;
+        }
+
+        if (!update.title) update.title = oEmbedData?.title || deriveTitleFromUrl(sourceInput.videoUrl);
+        if (!update.thumbnailUrl) update.thumbnailUrl = oEmbedData?.thumbnail_url || '';
+      } else {
+        if (!update.title) update.title = deriveTitleFromUrl(sourceInput.videoUrl);
+      }
+    }
+
+    const project = await Project.findByIdAndUpdate(id, { $set: update }, { new: true }).lean();
+
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found.' });
+    }
+
+    return res.status(200).json(project);
+  } catch (error) {
+    if (error.code === 11000 || error?.message?.includes('duplicate key')) {
+      return res.status(409).json({ message: 'That video already exists in the portfolio.' });
+    }
+
+    return next(error);
+  }
+};
+
+const deleteProject = async (req, res, next) => {
+  try {
+    const id = String(req.params.id || '').trim();
+
+    if (!id) {
+      return res.status(400).json({ message: 'Provide a valid project id.' });
+    }
+
+    const project = await Project.findById(id).select('order').lean();
+
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found.' });
+    }
+
+    await Project.findByIdAndDelete(id);
+
+    if (Number.isInteger(project.order)) {
+      await Project.updateMany({ order: { $gt: project.order } }, { $inc: { order: -1 } });
+    }
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   createProject,
   getProjects,
   reorderProjects,
+  updateProject,
+  deleteProject,
 };

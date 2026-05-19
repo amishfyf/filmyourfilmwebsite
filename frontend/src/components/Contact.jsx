@@ -128,36 +128,70 @@ export default function Contact() {
       <div className="contact-right animate-up">
         <div className="bento-grid">
           <a
-            href="mailto:hello@filmyourfilm.com"
+            href="mailto:ea@filmyourfilm.com"
             className="bento-card card-email"
           >
+            <div className="card-logo">
+              <img src="/email.svg" alt="Email" />
+            </div>
             <div className="card-content">
               <h3>Email</h3>
-              <p>hello@filmyourfilm.com</p>
+              <p>ea@filmyourfilm.com</p>
             </div>
           </a>
 
           <a
-            href="https://linkedin.com"
+            href="https://www.linkedin.com/company/film-your-film/people/"
             target="_blank"
             rel="noreferrer"
             className="bento-card card-linkedin"
           >
+            <div className="card-logo">
+              <img src="/linkedin.svg" alt="LinkedIn" />
+            </div>
             <div className="card-content">
               <h3>LinkedIn</h3>
-              <p>@akshaancreative</p>
+              <p>Film Your Film</p>
             </div>
           </a>
 
           <a
-            href="https://vimeo.com"
+            href="https://www.instagram.com/filmyourfilm/"
+            target="_blank"
+            rel="noreferrer"
+            className="bento-card card-instagram"
+          >
+            <div className="card-logo">
+              <img src="/instagram.svg" alt="Instagram" />
+            </div>
+            <div className="card-content">
+              <h3>Instagram</h3>
+              <p>@filmyourfilm</p>
+            </div>
+          </a>
+
+          <a
+            href="https://vimeo.com/curiouswanderer"
             target="_blank"
             rel="noreferrer"
             className="bento-card card-vimeo"
           >
+            <div className="card-logo">
+              <img src="/vimeo.svg" alt="Vimeo" />
+            </div>
             <div className="card-content">
               <h3>Vimeo</h3>
-              <p>@Film Your Film</p>
+              <p>@curiouswanderer</p>
+            </div>
+          </a>
+
+          <a href="tel:9888899224" className="bento-card card-phone">
+            <div className="card-logo">
+              <img src="/phone.svg" alt="Phone" />
+            </div>
+            <div className="card-content">
+              <h3>Phone</h3>
+              <p>+91 9888899224</p>
             </div>
           </a>
         </div>

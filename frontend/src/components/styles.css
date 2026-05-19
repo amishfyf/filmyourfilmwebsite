@@ -169,6 +169,14 @@ html {
   font-size: 0.82rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all 0.3s ease;
+}
+
+.bento-card:hover .bento-card-meta {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .bento-column.full .bento-card-meta {
@@ -196,8 +204,8 @@ html {
   margin: 0;
 }
 
-.horizontal-empty-card p + p,
-.horizontal-empty-card h2 + p {
+.horizontal-empty-card p+p,
+.horizontal-empty-card h2+p {
   margin-top: 0.75rem;
 }
 
@@ -251,6 +259,11 @@ html {
 }
 
 @media (max-width: 720px) {
+  .scroll-wrapper {
+    height: auto;
+    overflow: visible;
+  }
+
   .horizontal-track {
     flex-direction: column;
     width: 100%;

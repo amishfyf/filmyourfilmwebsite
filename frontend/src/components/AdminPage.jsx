@@ -6,6 +6,8 @@ import {
   getStoredAdminSession,
   loginAdmin,
   reorderAdminProjects,
+  updateAdminProject,
+  deleteAdminProject,
 } from "../services/adminApi";
 
 const DEFAULT_FORM_STATE = {
@@ -97,6 +99,7 @@ function AdminPage() {
   );
   const [isSubmittingProject, setIsSubmittingProject] = useState(false);
   const [isSavingLayout, setIsSavingLayout] = useState(false);
+  const [editingProjectId, setEditingProjectId] = useState(null);
 
   const hasLayoutChanges =
     createLayoutSignature(projects) !== savedLayoutSignature;
@@ -198,14 +201,25 @@ function AdminPage() {
     setNotice("");
 
     try {
-      await createAdminProject(session.token, buildCreatePayload(formState));
+      if (editingProjectId) {
+        await updateAdminProject(
+          session.token,
+          editingProjectId,
+          buildCreatePayload(formState),
+        );
+        setNotice("Project updated.");
+        setEditingProjectId(null);
+      } else {
+        await createAdminProject(session.token, buildCreatePayload(formState));
+        setNotice("Project added.");
+      }
+
       const nextProjects = sortProjects(
         await fetchAdminProjects(session.token),
       );
       setProjects(nextProjects);
       setSavedLayoutSignature(createLayoutSignature(nextProjects));
       setFormState(DEFAULT_FORM_STATE);
-      setNotice("Project added.");
     } catch (error) {
       if (isAuthError(error.message)) {
         handleLogout();
@@ -215,6 +229,49 @@ function AdminPage() {
       }
     } finally {
       setIsSubmittingProject(false);
+    }
+  };
+
+  const handleEditProject = (project) => {
+    setEditingProjectId(project._id);
+    setFormState({
+      videoUrl: project.videoUrl || "",
+      title: project.title || "",
+      thumbnailUrl: project.thumbnailUrl || "",
+      order: project.order ? String(project.order) : "",
+      gridStyle: project.gridStyle || "full",
+    });
+    setNotice("");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProjectId(null);
+    setFormState(DEFAULT_FORM_STATE);
+  };
+
+  const handleDeleteProject = async (projectId) => {
+    if (!session.token) return;
+
+    if (!window.confirm("Delete this project? This cannot be undone.")) return;
+
+    setErrorMessage("");
+    setNotice("");
+
+    try {
+      await deleteAdminProject(session.token, projectId);
+      const nextProjects = sortProjects(
+        await fetchAdminProjects(session.token),
+      );
+      setProjects(nextProjects);
+      setSavedLayoutSignature(createLayoutSignature(nextProjects));
+      setNotice("Project deleted.");
+    } catch (error) {
+      if (isAuthError(error.message)) {
+        handleLogout();
+        setErrorMessage("Your admin session expired. Sign in again.");
+      } else {
+        setErrorMessage(error.message);
+      }
     }
   };
 
@@ -435,8 +492,23 @@ function AdminPage() {
                     disabled={isSubmittingProject}
                     type="submit"
                   >
-                    {isSubmittingProject ? "Adding project..." : "Add project"}
+                    {isSubmittingProject
+                      ? editingProjectId
+                        ? "Updating..."
+                        : "Adding project..."
+                      : editingProjectId
+                        ? "Update project"
+                        : "Add project"}
                   </button>
+                  {editingProjectId ? (
+                    <button
+                      className="admin-button admin-button-muted admin-field-wide"
+                      onClick={handleCancelEdit}
+                      type="button"
+                    >
+                      Cancel edit
+                    </button>
+                  ) : null}
                 </form>
               </article>
 
@@ -519,6 +591,22 @@ function AdminPage() {
                               type="button"
                             >
                               Down
+                            </button>
+                          </div>
+                          <div className="admin-row-actions">
+                            <button
+                              className="admin-button admin-button-small"
+                              onClick={() => handleEditProject(project)}
+                              type="button"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="admin-button admin-button-small admin-button-muted"
+                              onClick={() => handleDeleteProject(project._id)}
+                              type="button"
+                            >
+                              Delete
                             </button>
                           </div>
                         </div>

@@ -103,3 +103,34 @@ export const reorderAdminProjects = async (token, items) => {
 
   return response.json();
 };
+
+export const updateAdminProject = async (token, id, payload) => {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/projects/${encodeURIComponent(id)}`,
+    buildAuthorizedRequest(token, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    })
+  );
+
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response, 'Unable to update the project.'));
+  }
+
+  return response.json();
+};
+
+export const deleteAdminProject = async (token, id) => {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/projects/${encodeURIComponent(id)}`,
+    buildAuthorizedRequest(token, {
+      method: 'DELETE',
+    })
+  );
+
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response, 'Unable to delete the project.'));
+  }
+
+  return response.json();
+};
