@@ -4,6 +4,7 @@ import "lenis/dist/lenis.css";
 import AdminPage from "./components/AdminPage";
 import HorizontalScroll from "./components/HorizontalScroll";
 import Contact from "./components/Contact";
+import ClientGrid from "./components/ClientGrid";
 import VideoModal from "./components/VideoModal";
 import WorkPage from "./components/WorkPage";
 import "./App.css";
@@ -74,6 +75,7 @@ function App() {
 
       <main className="site-main">
         <HorizontalScroll onSelectProject={setActiveProject} />
+        <ClientGrid />
         <Contact />
       </main>
 
