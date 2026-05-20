@@ -52,6 +52,20 @@ export default function HorizontalScroll({ onSelectProject }) {
 
   useGSAP(
     () => {
+      gsap.from(".hero-section > *", {
+        x: -50,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.2,
+        ease: "power3.out",
+        delay: 0.2,
+      });
+    },
+    { scope: wrapperRef }
+  );
+
+  useGSAP(
+    () => {
       if (!wrapperRef.current || !trackRef.current || !hasTrackContent) {
         return undefined;
       }
@@ -140,7 +154,7 @@ export default function HorizontalScroll({ onSelectProject }) {
                       <p className="bento-card-meta">
                         {getProjectMetaLabel(item, panel.type)}
                       </p>
-                      <h3 className="bento-card-meta">{item.title}</h3>
+                      <h3 className="bento-card-title">{item.title}</h3>
                     </div>
                   </div>
                 );

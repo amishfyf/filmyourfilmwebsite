@@ -196,6 +196,11 @@
     width: 100%;
     justify-content: space-between;
   }
+  
+  .hero-section {
+    min-height: auto;
+    padding: 9rem 1rem 3rem;
+  }
 }
 
 .admin-shell {
