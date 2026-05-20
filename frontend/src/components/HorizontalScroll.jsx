@@ -14,12 +14,13 @@ import "./styles.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function HorizontalScroll({ onSelectProject }) {
+export default function HorizontalScroll({ onSelectProject, loading }) {
   const wrapperRef = useRef(null);
   const trackRef = useRef(null);
   const [projects, setProjects] = useState([]);
   const [status, setStatus] = useState("loading");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showcaseType, setShowcaseType] = useState("cinema");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -47,11 +48,28 @@ export default function HorizontalScroll({ onSelectProject }) {
     return () => controller.abort();
   }, []);
 
-  const panels = buildPanels(projects);
-  const hasTrackContent = status === "success" && panels.length > 0;
+  const aiProjects = projects.filter((project) => project.raw?.isAi);
+  const regularProjects = projects.filter((project) => !project.raw?.isAi);
+
+  const aiPanels = buildPanels(aiProjects);
+  const regularPanels = buildPanels(regularProjects);
+  const activePanels = showcaseType === "cinema" ? regularPanels : aiPanels;
+  const hasTrackContent = status === "success" && activePanels.length > 0;
+
+  const handleToggle = (type) => {
+    if (type === showcaseType) return;
+    setShowcaseType(type);
+    if (window.lenis) {
+      window.lenis.scrollTo(0, { immediate: true });
+    } else {
+      window.scrollTo(0, 0);
+    }
+  };
 
   useGSAP(
     () => {
+      if (loading) return;
+
       gsap.from(".hero-section > *", {
         x: -50,
         opacity: 0,
@@ -61,7 +79,7 @@ export default function HorizontalScroll({ onSelectProject }) {
         delay: 0.2,
       });
     },
-    { scope: wrapperRef }
+    { scope: wrapperRef, dependencies: [loading] }
   );
 
   useGSAP(
@@ -110,7 +128,7 @@ export default function HorizontalScroll({ onSelectProject }) {
     },
     {
       scope: wrapperRef,
-      dependencies: [hasTrackContent, projects],
+      dependencies: [hasTrackContent, projects, showcaseType],
       revertOnUpdate: true,
     },
   );
@@ -119,23 +137,55 @@ export default function HorizontalScroll({ onSelectProject }) {
     <div className="scroll-wrapper" ref={wrapperRef}>
       <div className="horizontal-track" ref={trackRef}>
         <section className="hero-section horizontal-panel" id="home">
-          <p className="hero-kicker">
-            Cinematic systems for brands and stories
-          </p>
-          <h1 className="hero-title">
-            Turning complex ideas into clear,{" "}
-            <span className="serif-italic">scalable creative</span> systems.
-          </h1>
-          <p className="hero-copy">
-            Stories, workflows, and AI-powered content designed to scale across
-            premium digital experiences.
-          </p>
+          <div className="hero-left">
+            <p className="hero-kicker">
+              Cinematic systems for brands and stories
+            </p>
+            <h1 className="hero-title">
+              Turning complex ideas into clear,{" "}
+              <span className="serif-italic">scalable creative</span> systems.
+            </h1>
+            <p className="hero-copy">
+              Stories, workflows, and AI-powered content designed to scale across
+              premium digital experiences.
+            </p>
+          </div>
+
+          <div className="hero-right">
+            <div className="hero-selector-vertical">
+              <button
+                className={`selector-btn-v ${showcaseType === "cinema" ? "active" : ""}`}
+                onClick={() => handleToggle("cinema")}
+              >
+                Cinema Work
+              </button>
+              <button
+                className={`selector-btn-v ${showcaseType === "ai" ? "active" : ""}`}
+                onClick={() => handleToggle("ai")}
+              >
+                AI Videos
+              </button>
+            </div>
+
+            <div className="scroll-indicator-horizontal">
+              <span>Scroll to explore</span>
+              <svg className="scroll-indicator-arrow" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M5 12H19M19 12L13 6M19 12L13 18"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+          </div>
         </section>
 
-        {status === "success" && panels.length ? (
-          panels.map((panel, index) => (
+        {status === "success" && activePanels.length ? (
+          activePanels.map((panel, index) => (
             <section
-              key={`${panel.type}-${index}`}
+              key={`${showcaseType}-${panel.type}-${index}`}
               className={`showcase-panel bento-column ${panel.type}`}
               id={index === 0 ? "work" : undefined}
             >
@@ -173,7 +223,7 @@ export default function HorizontalScroll({ onSelectProject }) {
               <p>
                 {status === "error"
                   ? errorMessage
-                  : "Publish videos through the hidden /Admin page to populate this showcase."}
+                  : `Publish ${showcaseType === "ai" ? "AI " : ""}videos through the hidden /Admin page to populate this showcase.`}
               </p>
             </div>
           </section>

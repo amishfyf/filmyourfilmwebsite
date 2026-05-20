@@ -19,14 +19,32 @@ function App() {
   const isAdminRoute = normalizedPath === "/admin";
   const isWorkRoute = normalizedPath === "/work";
   const [activeProject, setActiveProject] = useState(null);
+  const [loading, setLoading] = useState(!isAdminRoute && !isWorkRoute);
+  const [fade, setFade] = useState(false);
 
   useEffect(() => {
+    if (isAdminRoute || isWorkRoute) return;
+
     const lenis = new Lenis({
       autoRaf: true,
       lerp: 0.1, // Adjust for smoothness
       duration: 1.2,
       smoothWheel: true,
     });
+
+    window.lenis = lenis;
+    lenis.stop();
+    document.body.style.overflow = "hidden";
+
+    const fadeTimeout = setTimeout(() => {
+      setFade(true);
+    }, 1000);
+
+    const endTimeout = setTimeout(() => {
+      setLoading(false);
+      lenis.start();
+      document.body.style.overflow = "";
+    }, 1500);
 
     // Handle smooth scrolling for anchor links to prevent the `#contact` URL jump
     const handleAnchorClick = (e) => {
@@ -44,9 +62,13 @@ function App() {
 
     return () => {
       document.removeEventListener("click", handleAnchorClick);
+      clearTimeout(fadeTimeout);
+      clearTimeout(endTimeout);
       lenis.destroy();
+      window.lenis = null;
+      document.body.style.overflow = "";
     };
-  }, []);
+  }, [isAdminRoute, isWorkRoute]);
 
   if (isAdminRoute) {
     return <AdminPage />;
@@ -58,6 +80,16 @@ function App() {
 
   return (
     <div className="app-shell">
+      {loading && (
+        <div className={`fullscreen-loader ${fade ? "fade-out" : ""}`}>
+          <img
+            alt="Film Your Film"
+            className="loader-logo-mark"
+            src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
+          />
+        </div>
+      )}
+
       <header className="site-header">
         <a className="site-logo" href="#home">
           <img
@@ -74,7 +106,7 @@ function App() {
       </header>
 
       <main className="site-main">
-        <HorizontalScroll onSelectProject={setActiveProject} />
+        <HorizontalScroll onSelectProject={setActiveProject} loading={loading} />
         <ClientGrid />
         <Contact />
       </main>

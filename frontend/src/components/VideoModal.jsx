@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { isDirectVideoUrl, normalizeVideoUrl } from "../utils/videoUrl";
+import { isDirectVideoUrl, normalizeVideoUrl, isGoogleDriveUrl, getGoogleDriveEmbedUrl } from "../utils/videoUrl";
 
 const getSourceType = (project) => {
   if (project?.sourceType === "direct") {
@@ -7,11 +7,18 @@ const getSourceType = (project) => {
   }
 
   if (project?.sourceType === "external") {
+    if (project?.videoUrl && isGoogleDriveUrl(project.videoUrl)) {
+      return "google-drive";
+    }
     return "external";
   }
 
   if (project?.sourceType === "vimeo" || project?.vimeoId) {
     return "vimeo";
+  }
+
+  if (project?.videoUrl && isGoogleDriveUrl(project.videoUrl)) {
+    return "google-drive";
   }
 
   if (project?.videoUrl && isDirectVideoUrl(project.videoUrl)) {
@@ -31,6 +38,9 @@ const getVideoUrl = (project) => {
   }
 
   if (project.videoUrl) {
+    if (isGoogleDriveUrl(project.videoUrl)) {
+      return getGoogleDriveEmbedUrl(project.videoUrl);
+    }
     return normalizeVideoUrl(project.videoUrl);
   }
 
@@ -119,6 +129,14 @@ function VideoModal({ project, onClose }) {
               allowFullScreen
               src={videoUrl}
               title={project.title}
+            ></iframe>
+          ) : sourceType === "google-drive" ? (
+            <iframe
+              allow="autoplay; fullscreen"
+              allowFullScreen
+              src={videoUrl}
+              title={project.title}
+              style={{ border: 'none', width: '100%', height: '100%' }}
             ></iframe>
           ) : (
             <iframe

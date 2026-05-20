@@ -16,6 +16,7 @@ const DEFAULT_FORM_STATE = {
   thumbnailUrl: "",
   order: "",
   gridStyle: "full",
+  isAi: false,
 };
 
 const GRID_STYLE_OPTIONS = [
@@ -66,6 +67,7 @@ const buildCreatePayload = (formState) => {
   const payload = {
     videoUrl: formState.videoUrl.trim(),
     gridStyle: formState.gridStyle,
+    isAi: formState.isAi,
   };
 
   if (formState.title.trim()) {
@@ -240,6 +242,7 @@ function AdminPage() {
       thumbnailUrl: project.thumbnailUrl || "",
       order: project.order ? String(project.order) : "",
       gridStyle: project.gridStyle || "full",
+      isAi: project.isAi || false,
     });
     setNotice("");
   };
@@ -487,6 +490,16 @@ function AdminPage() {
                     </select>
                   </label>
 
+                  <label className="admin-field admin-field-wide admin-checkbox-field" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={formState.isAi}
+                      onChange={(event) => setFormState((current) => ({ ...current, isAi: event.target.checked }))}
+                      style={{ width: 'auto', cursor: 'pointer' }}
+                    />
+                    <span style={{ fontSize: '0.9rem', color: '#f4efe6' }}>AI Video Portfolio Item</span>
+                  </label>
+
                   <button
                     className="admin-button admin-field-wide"
                     disabled={isSubmittingProject}
@@ -545,7 +558,7 @@ function AdminPage() {
                         <div className="admin-project-copy">
                           <p className="admin-project-order">#{index + 1}</p>
                           <h3>{project.title}</h3>
-                          <p>{project.sourceType || "external"} source</p>
+                          <p>{project.sourceType || "external"} source {project.isAi ? " • AI Video" : ""}</p>
                           <a
                             href={project.videoUrl}
                             rel="noreferrer"

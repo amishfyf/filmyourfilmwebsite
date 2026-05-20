@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { isDirectVideoUrl, normalizeVideoUrl } from '../utils/videoUrl';
+import { isDirectVideoUrl, normalizeVideoUrl, isGoogleDriveUrl, getGoogleDriveDirectUrl } from '../utils/videoUrl';
 
 const ACTIVE_PREVIEW_VISIBILITY_RATIO = 0;
 const PREVIEW_VISIBILITY_THRESHOLDS = [0, 0.15, 0.35, 0.55, 0.75, 1];
@@ -12,11 +12,18 @@ const getProjectSourceType = (project) => {
   }
 
   if (project?.sourceType === 'external') {
+    if (project?.videoUrl && isGoogleDriveUrl(project.videoUrl)) {
+      return 'google-drive';
+    }
     return 'external';
   }
 
   if (project?.sourceType === 'vimeo' || project?.vimeoId) {
     return 'vimeo';
+  }
+
+  if (project?.videoUrl && isGoogleDriveUrl(project.videoUrl)) {
+    return 'google-drive';
   }
 
   if (project?.videoUrl && isDirectVideoUrl(project.videoUrl)) {
@@ -149,6 +156,8 @@ export const getProjectMetaLabel = (item, panelType) => {
 export function ProjectPreviewMedia({ item }) {
   const shouldRenderDirectPreview = item.sourceType === 'direct' && item.videoUrl;
   const vimeoPreviewUrl = item.sourceType === 'vimeo' ? getVimeoPreviewUrl(item) : '';
+  const isGoogleDrive = item.sourceType === 'google-drive';
+  const driveDirectUrl = isGoogleDrive ? getGoogleDriveDirectUrl(item.videoUrl) : '';
 
   return (
     <div className="bento-card-media-shell">
@@ -162,6 +171,17 @@ export function ProjectPreviewMedia({ item }) {
           poster={item.thumbnailUrl || undefined}
           preload="metadata"
           src={item.videoUrl}
+        />
+      ) : isGoogleDrive && driveDirectUrl ? (
+        <video
+          autoPlay
+          className="bento-card-media"
+          loop
+          muted
+          playsInline
+          poster={item.thumbnailUrl || undefined}
+          preload="metadata"
+          src={driveDirectUrl}
         />
       ) : vimeoPreviewUrl ? (
         <div aria-hidden="true" className="bento-card-media bento-card-media-frame">

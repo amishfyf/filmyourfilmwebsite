@@ -19,3 +19,22 @@ export const normalizeVideoUrl = (value = '') => {
 export const isDirectVideoUrl = (value = '') => {
   return DIRECT_VIDEO_PATTERN.test(normalizeVideoUrl(value));
 };
+
+export const isGoogleDriveUrl = (value = '') => {
+  return /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/.test(String(value));
+};
+
+export const getGoogleDriveFileId = (value = '') => {
+  const match = String(value).match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  return match ? match[1] : '';
+};
+
+export const getGoogleDriveEmbedUrl = (value = '') => {
+  const id = getGoogleDriveFileId(value);
+  return id ? `https://drive.google.com/file/d/${id}/preview` : '';
+};
+
+export const getGoogleDriveDirectUrl = (value = '') => {
+  const id = getGoogleDriveFileId(value);
+  return id ? `https://drive.google.com/uc?export=download&id=${id}` : '';
+};
