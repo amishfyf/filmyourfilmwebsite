@@ -144,6 +144,7 @@ html {
   inset: auto 0 0;
   z-index: 1;
   padding: 1.5rem;
+  
 }
 
 .bento-column.full .bento-card-title-wrap {
@@ -172,6 +173,11 @@ html {
   opacity: 0;
   transform: translateY(-8px);
   transition: all 0.3s ease;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  border-radius: 1rem;
+  width: max-content;
+  padding: 1.25rem 1.75rem;
 }
 
 .bento-card:hover .bento-card-meta {

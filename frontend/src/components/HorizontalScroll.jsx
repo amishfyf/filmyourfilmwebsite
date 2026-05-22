@@ -201,10 +201,8 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
 
                     <div className="bento-card-overlay" />
                     <div className="bento-card-title-wrap">
-                      <p className="bento-card-meta">
-                        {getProjectMetaLabel(item, panel.type)}
-                      </p>
-                      <h3 className="bento-card-title">{item.title}</h3>
+                      
+                      <h3 className="bento-card-meta">{item.title}</h3>
                     </div>
                   </div>
                 );
