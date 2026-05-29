@@ -31,6 +31,10 @@ const projectSchema = new mongoose.Schema(
       trim: true,
       default: '',
     },
+    isAi: {
+      type: Boolean,
+      default: false,
+    },
     order: {
       type: Number,
     },

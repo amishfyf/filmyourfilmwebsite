@@ -70,6 +70,15 @@ const normalizeGridStyle = (value) => {
   return GRID_STYLES.has(normalizedValue) ? normalizedValue : null;
 };
 
+const normalizeBoolean = (value) => {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value === 'boolean') return value;
+  const str = String(value).trim().toLowerCase();
+  if (str === 'true' || str === '1') return true;
+  if (str === 'false' || str === '0' || str === '') return false;
+  return undefined;
+};
+
 const normalizeUrl = (value = '') => {
   try {
     return repairWebsiteFilesCdnUrl(new URL(String(value).trim()).toString());
@@ -162,6 +171,7 @@ const createProject = async (req, res, next) => {
       gridStyle,
       title: customTitle,
       thumbnailUrl: customThumbnailUrl,
+      isAi: rawIsAi,
     } = req.body;
     const sourceInput = resolveSourceInput({
       videoUrl,
@@ -246,6 +256,7 @@ const createProject = async (req, res, next) => {
       ...projectPayload,
       order: assignedOrder,
       gridStyle: resolvedGridStyle,
+      isAi: normalizeBoolean(rawIsAi) === true,
     });
 
     return res.status(201).json(project);
@@ -348,6 +359,7 @@ const updateProject = async (req, res, next) => {
       videoUrl: rawVideoUrl,
       vimeoId: rawVimeoId,
       vimeoUrl: rawVimeoUrl,
+      isAi: rawIsAi,
     } = req.body;
 
     const update = {};
@@ -366,6 +378,11 @@ const updateProject = async (req, res, next) => {
         return res.status(400).json({ message: 'gridStyle must be one of: full, half-top, half-bottom.' });
       }
       update.gridStyle = normalized;
+    }
+
+    if (rawIsAi !== undefined) {
+      const normalized = normalizeBoolean(rawIsAi);
+      if (normalized !== undefined) update.isAi = normalized;
     }
 
     if (rawVideoUrl !== undefined || rawVimeoId !== undefined || rawVimeoUrl !== undefined) {
