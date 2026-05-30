@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { isDirectVideoUrl, normalizeVideoUrl } from "../utils/videoUrl";
+import { isDirectVideoUrl, normalizeVideoUrl, isCloudinaryUrl, getCloudinaryOptimizedUrl } from "../utils/videoUrl";
 
 const getSourceType = (project) => {
-  if (project?.sourceType === "direct") {
+  if (project?.sourceType === "direct" || project?.sourceType === "cloudinary") {
     return "direct";
   }
 
@@ -12,6 +12,10 @@ const getSourceType = (project) => {
 
   if (project?.sourceType === "vimeo" || project?.vimeoId) {
     return "vimeo";
+  }
+
+  if (project?.videoUrl && isCloudinaryUrl(project.videoUrl)) {
+    return "direct";
   }
 
   if (project?.videoUrl && isDirectVideoUrl(project.videoUrl)) {
@@ -26,12 +30,13 @@ const getVideoUrl = (project) => {
     return "";
   }
 
-  if (project.vimeoId) {
+  if (project.vimeoId && !project.videoUrl) {
     return `https://player.vimeo.com/video/${project.vimeoId}?autoplay=1&title=0&byline=0&portrait=0`;
   }
 
   if (project.videoUrl) {
-    return normalizeVideoUrl(project.videoUrl);
+    const normalized = normalizeVideoUrl(project.videoUrl);
+    return isCloudinaryUrl(normalized) ? getCloudinaryOptimizedUrl(normalized) : normalized;
   }
 
   return "";

@@ -87,11 +87,19 @@ const normalizeUrl = (value = '') => {
   }
 };
 
+const isCloudinaryUrl = (value = '') => {
+  return /res\.cloudinary\.com\/.+\/video\/upload/i.test(String(value));
+};
+
 const isDirectVideoUrl = (value = '') => {
   const normalizedUrl = normalizeUrl(value);
 
   if (!normalizedUrl) {
     return false;
+  }
+
+  if (isCloudinaryUrl(normalizedUrl)) {
+    return true;
   }
 
   return DIRECT_VIDEO_PATTERN.test(new URL(normalizedUrl).pathname);

@@ -38,3 +38,26 @@ export const getGoogleDriveDirectUrl = (value = '') => {
   const id = getGoogleDriveFileId(value);
   return id ? `https://drive.google.com/uc?export=download&id=${id}` : '';
 };
+
+export const isCloudinaryUrl = (value = '') => {
+  return /res\.cloudinary\.com\/.+\/video\/upload/i.test(String(value));
+};
+
+export const getCloudinaryOptimizedUrl = (value = '') => {
+  const url = String(value).trim();
+
+  if (!isCloudinaryUrl(url)) {
+    return url;
+  }
+
+  // Already has transforms — don't double-add
+  if (/\/q_auto|\/f_auto/.test(url)) {
+    return url;
+  }
+
+  // Insert q_auto,f_auto after /upload/
+  return url.replace(
+    /(\/upload\/)/i,
+    '$1q_auto,f_auto/'
+  );
+};

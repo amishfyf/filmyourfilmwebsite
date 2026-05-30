@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const GRID_STYLES = ['full', 'half-top', 'half-bottom'];
-const SOURCE_TYPES = ['vimeo', 'direct', 'external'];
+const SOURCE_TYPES = ['vimeo', 'direct', 'external', 'cloudinary'];
 
 const projectSchema = new mongoose.Schema(
   {

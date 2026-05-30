@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { isDirectVideoUrl, normalizeVideoUrl, isGoogleDriveUrl, getGoogleDriveDirectUrl } from '../utils/videoUrl';
+import { isDirectVideoUrl, normalizeVideoUrl, isGoogleDriveUrl, getGoogleDriveDirectUrl, isCloudinaryUrl, getCloudinaryOptimizedUrl } from '../utils/videoUrl';
 
 const ACTIVE_PREVIEW_VISIBILITY_RATIO = 0;
 const PREVIEW_VISIBILITY_THRESHOLDS = [0, 0.15, 0.35, 0.55, 0.75, 1];
@@ -39,7 +39,8 @@ const getProjectVideoUrl = (project) => {
   }
 
   if (project.videoUrl) {
-    return normalizeVideoUrl(project.videoUrl);
+    const normalized = normalizeVideoUrl(project.videoUrl);
+    return isCloudinaryUrl(normalized) ? getCloudinaryOptimizedUrl(normalized) : normalized;
   }
 
   if (project.vimeoId) {

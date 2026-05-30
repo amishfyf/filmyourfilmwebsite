@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import AdminPage from "./components/AdminPage";
@@ -7,6 +7,7 @@ import Contact from "./components/Contact";
 import ClientGrid from "./components/ClientGrid";
 import VideoModal from "./components/VideoModal";
 import WorkPage from "./components/WorkPage";
+import LandingPage from "./components/LandingPage";
 import "./App.css";
 
 const getNormalizedPath = () => {
@@ -19,34 +20,32 @@ function App() {
   const isAdminRoute = normalizedPath === "/admin";
   const isWorkRoute = normalizedPath === "/work";
   const [activeProject, setActiveProject] = useState(null);
-  const [loading, setLoading] = useState(!isAdminRoute && !isWorkRoute);
-  const [fade, setFade] = useState(false);
+  const [showLanding, setShowLanding] = useState(!isAdminRoute && !isWorkRoute);
+  // splashDone drives hero entrance animation — false while splash is visible
+  const [splashDone, setSplashDone] = useState(isAdminRoute || isWorkRoute);
 
   useEffect(() => {
     if (isAdminRoute || isWorkRoute) return;
 
     const lenis = new Lenis({
       autoRaf: true,
-      lerp: 0.1, // Adjust for smoothness
+      lerp: 0.1,
       duration: 1.2,
       smoothWheel: true,
     });
 
     window.lenis = lenis;
-    lenis.stop();
-    document.body.style.overflow = "hidden";
 
-    const fadeTimeout = setTimeout(() => {
-      setFade(true);
-    }, 1000);
-
-    const endTimeout = setTimeout(() => {
-      setLoading(false);
+    // Keep scroll locked while landing splash is visible
+    if (showLanding) {
+      lenis.stop();
+      document.body.style.overflow = "hidden";
+    } else {
       lenis.start();
       document.body.style.overflow = "";
-    }, 1500);
+    }
 
-    // Handle smooth scrolling for anchor links to prevent the `#contact` URL jump
+    // Handle smooth scrolling for anchor links
     const handleAnchorClick = (e) => {
       const target = e.target.closest("a");
       if (!target) return;
@@ -62,13 +61,22 @@ function App() {
 
     return () => {
       document.removeEventListener("click", handleAnchorClick);
-      clearTimeout(fadeTimeout);
-      clearTimeout(endTimeout);
       lenis.destroy();
       window.lenis = null;
       document.body.style.overflow = "";
     };
-  }, [isAdminRoute, isWorkRoute]);
+  }, [isAdminRoute, isWorkRoute, showLanding]);
+
+  const handleSplashComplete = useCallback(() => {
+    setShowLanding(false);
+    setSplashDone(true);
+
+    // Unlock scroll
+    if (window.lenis) {
+      window.lenis.start();
+      document.body.style.overflow = "";
+    }
+  }, []);
 
   if (isAdminRoute) {
     return <AdminPage />;
@@ -80,15 +88,8 @@ function App() {
 
   return (
     <div className="app-shell">
-      {loading && (
-        <div className={`fullscreen-loader ${fade ? "fade-out" : ""}`}>
-          <img
-            alt="Film Your Film"
-            className="loader-logo-mark"
-            src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
-          />
-        </div>
-      )}
+      {/* Portal-based splash — renders into document.body, covers everything */}
+      {showLanding && <LandingPage onComplete={handleSplashComplete} />}
 
       <header className="site-header">
         <a className="site-logo" href="#home">
@@ -106,7 +107,15 @@ function App() {
       </header>
 
       <main className="site-main">
-        <HorizontalScroll onSelectProject={setActiveProject} loading={loading} />
+        {/*
+          splashDone=false: GSAP scroll setup runs (positions track to center),
+                            but hero entrance anim waits
+          splashDone=true:  hero entrance animation plays
+        */}
+        <HorizontalScroll
+          onSelectProject={setActiveProject}
+          loading={!splashDone}
+        />
         <ClientGrid />
         <Contact />
       </main>
