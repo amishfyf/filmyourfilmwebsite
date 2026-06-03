@@ -90,6 +90,8 @@ function AdminPage() {
   const [password, setPassword] = useState("");
   const [formState, setFormState] = useState(DEFAULT_FORM_STATE);
   const [projects, setProjects] = useState([]);
+  const normalProjects = projects.filter((p) => !p.isAi);
+  const aiProjects = projects.filter((p) => p.isAi);
   const [savedLayoutSignature, setSavedLayoutSignature] = useState(
     createLayoutSignature(),
   );
@@ -104,7 +106,7 @@ function AdminPage() {
   const [editingProjectId, setEditingProjectId] = useState(null);
 
   const hasLayoutChanges =
-    createLayoutSignature(projects) !== savedLayoutSignature;
+    createLayoutSignature(normalProjects) !== savedLayoutSignature;
 
   useEffect(() => {
     if (!session.token) {
@@ -130,7 +132,9 @@ function AdminPage() {
         }
 
         setProjects(nextProjects);
-        setSavedLayoutSignature(createLayoutSignature(nextProjects));
+        setSavedLayoutSignature(
+          createLayoutSignature(nextProjects.filter((p) => !p.isAi)),
+        );
       } catch (error) {
         if (isCancelled) {
           return;
@@ -220,7 +224,9 @@ function AdminPage() {
         await fetchAdminProjects(session.token),
       );
       setProjects(nextProjects);
-      setSavedLayoutSignature(createLayoutSignature(nextProjects));
+      setSavedLayoutSignature(
+        createLayoutSignature(nextProjects.filter((p) => !p.isAi)),
+      );
       setFormState(DEFAULT_FORM_STATE);
     } catch (error) {
       if (isAuthError(error.message)) {
@@ -266,7 +272,9 @@ function AdminPage() {
         await fetchAdminProjects(session.token),
       );
       setProjects(nextProjects);
-      setSavedLayoutSignature(createLayoutSignature(nextProjects));
+      setSavedLayoutSignature(
+        createLayoutSignature(nextProjects.filter((p) => !p.isAi)),
+      );
       setNotice("Project deleted.");
     } catch (error) {
       if (isAuthError(error.message)) {
@@ -292,7 +300,9 @@ function AdminPage() {
         await fetchAdminProjects(session.token),
       );
       setProjects(nextProjects);
-      setSavedLayoutSignature(createLayoutSignature(nextProjects));
+      setSavedLayoutSignature(
+        createLayoutSignature(nextProjects.filter((p) => !p.isAi)),
+      );
     } catch (error) {
       if (isAuthError(error.message)) {
         handleLogout();
@@ -305,18 +315,25 @@ function AdminPage() {
     }
   };
 
-  const moveProject = (index, direction) => {
+  const moveProject = (nonAiIndex, direction) => {
     setProjects((current) => {
-      const targetIndex = index + direction;
+      const nonAi = current.filter((p) => !p.isAi);
+      const targetIndex = nonAiIndex + direction;
 
-      if (targetIndex < 0 || targetIndex >= current.length) {
+      if (targetIndex < 0 || targetIndex >= nonAi.length) {
         return current;
       }
 
-      const nextProjects = [...current];
-      const [selectedProject] = nextProjects.splice(index, 1);
-      nextProjects.splice(targetIndex, 0, selectedProject);
-      return nextProjects;
+      const nextNonAi = [...nonAi];
+      const [selected] = nextNonAi.splice(nonAiIndex, 1);
+      nextNonAi.splice(targetIndex, 0, selected);
+
+      let nonAiCursor = 0;
+      const merged = current.map((item) =>
+        item.isAi ? item : nextNonAi[nonAiCursor++],
+      );
+
+      return merged;
     });
     setNotice("");
   };
@@ -326,9 +343,9 @@ function AdminPage() {
       current.map((project) =>
         project._id === projectId
           ? {
-              ...project,
-              gridStyle: nextGridStyle,
-            }
+            ...project,
+            gridStyle: nextGridStyle,
+          }
           : project,
       ),
     );
@@ -348,14 +365,18 @@ function AdminPage() {
       const nextProjects = sortProjects(
         await reorderAdminProjects(
           session.token,
-          projects.map((project) => ({
-            id: project._id,
-            gridStyle: project.gridStyle || "full",
-          })),
+          projects
+            .filter((p) => !p.isAi)
+            .map((project) => ({
+              id: project._id,
+              gridStyle: project.gridStyle || "full",
+            })),
         ),
       );
       setProjects(nextProjects);
-      setSavedLayoutSignature(createLayoutSignature(nextProjects));
+      setSavedLayoutSignature(
+        createLayoutSignature(nextProjects.filter((p) => !p.isAi)),
+      );
       setNotice("Project layout saved.");
     } catch (error) {
       if (isAuthError(error.message)) {
@@ -490,14 +511,29 @@ function AdminPage() {
                     </select>
                   </label>
 
-                  <label className="admin-field admin-field-wide admin-checkbox-field" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                  <label
+                    className="admin-field admin-field-wide admin-checkbox-field"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      cursor: "pointer",
+                    }}
+                  >
                     <input
                       type="checkbox"
                       checked={formState.isAi}
-                      onChange={(event) => setFormState((current) => ({ ...current, isAi: event.target.checked }))}
-                      style={{ width: 'auto', cursor: 'pointer' }}
+                      onChange={(event) =>
+                        setFormState((current) => ({
+                          ...current,
+                          isAi: event.target.checked,
+                        }))
+                      }
+                      style={{ width: "auto", cursor: "pointer" }}
                     />
-                    <span style={{ fontSize: '0.9rem', color: '#f4efe6' }}>AI Video Portfolio Item</span>
+                    <span style={{ fontSize: "0.9rem", color: "#f4efe6" }}>
+                      AI Video Portfolio Item
+                    </span>
                   </label>
 
                   <button
@@ -552,13 +588,16 @@ function AdminPage() {
                 </div>
 
                 <div className="admin-project-list">
-                  {projects.length ? (
-                    projects.map((project, index) => (
+                  {normalProjects.length ? (
+                    normalProjects.map((project, index) => (
                       <article className="admin-project-row" key={project._id}>
                         <div className="admin-project-copy">
                           <p className="admin-project-order">#{index + 1}</p>
                           <h3>{project.title}</h3>
-                          <p>{project.sourceType || "external"} source {project.isAi ? " • AI Video" : ""}</p>
+                          <p>
+                            {project.sourceType || "external"} source{" "}
+                            {project.isAi ? " • AI Video" : ""}
+                          </p>
                           <a
                             href={project.videoUrl}
                             rel="noreferrer"
@@ -599,7 +638,7 @@ function AdminPage() {
                             </button>
                             <button
                               className="admin-button admin-button-small admin-button-muted"
-                              disabled={index === projects.length - 1}
+                              disabled={index === normalProjects.length - 1}
                               onClick={() => moveProject(index, 1)}
                               type="button"
                             >
@@ -630,6 +669,81 @@ function AdminPage() {
                       {isLoadingProjects
                         ? "Loading projects..."
                         : "No projects in the portfolio yet."}
+                    </div>
+                  )}
+                </div>
+              </article>
+
+              <article className="admin-card admin-card-list">
+                <div className="admin-section-heading">
+                  <div>
+                    <p className="admin-eyebrow">AI Projects</p>
+                    <h2>AI Video items</h2>
+                  </div>
+                </div>
+
+                <div className="admin-project-list">
+                  {aiProjects.length ? (
+                    aiProjects.map((project) => (
+                      <article className="admin-project-row" key={project._id}>
+                        <div className="admin-project-copy">
+                          <h3>{project.title}</h3>
+                          <p>
+                            {project.sourceType || "external"} source • AI Video
+                          </p>
+                          <a
+                            href={project.videoUrl}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            Open media source
+                          </a>
+                        </div>
+
+                        <div className="admin-project-controls">
+                          <label className="admin-field admin-field-compact">
+                            <span>Grid style</span>
+                            <select
+                              onChange={(event) =>
+                                updateProjectGridStyle(
+                                  project._id,
+                                  event.target.value,
+                                )
+                              }
+                              value={project.gridStyle || "full"}
+                            >
+                              {GRID_STYLE_OPTIONS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+
+                          <div className="admin-row-actions">
+                            <button
+                              className="admin-button admin-button-small"
+                              onClick={() => handleEditProject(project)}
+                              type="button"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="admin-button admin-button-small admin-button-muted"
+                              onClick={() => handleDeleteProject(project._id)}
+                              type="button"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    ))
+                  ) : (
+                    <div className="admin-empty-state">
+                      {isLoadingProjects
+                        ? "Loading projects..."
+                        : "No AI projects yet."}
                     </div>
                   )}
                 </div>

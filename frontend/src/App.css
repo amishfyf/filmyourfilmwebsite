@@ -186,6 +186,7 @@
 }
 
 @media (max-width: 720px) {
+
   .site-header,
   .video-modal-header {
     flex-direction: column;
@@ -196,7 +197,7 @@
     width: 100%;
     justify-content: space-between;
   }
-  
+
   .hero-section {
     min-height: auto;
     padding: 9rem 1rem 3rem;
@@ -278,8 +279,10 @@
 
 .admin-grid {
   display: grid;
-  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  /* 3-column layout: ingestion | normal projects | AI projects */
+  grid-template-columns: minmax(320px, 420px) minmax(320px, 1fr) minmax(260px, 360px);
   gap: 1rem;
+  align-items: start;
 }
 
 .admin-card {

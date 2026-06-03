@@ -70,6 +70,15 @@ const normalizeGridStyle = (value) => {
   return GRID_STYLES.has(normalizedValue) ? normalizedValue : null;
 };
 
+const normalizeBoolean = (value) => {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value === 'boolean') return value;
+  const str = String(value).trim().toLowerCase();
+  if (str === 'true' || str === '1') return true;
+  if (str === 'false' || str === '0' || str === '') return false;
+  return undefined;
+};
+
 const normalizeUrl = (value = '') => {
   try {
     return repairWebsiteFilesCdnUrl(new URL(String(value).trim()).toString());
@@ -78,11 +87,19 @@ const normalizeUrl = (value = '') => {
   }
 };
 
+const isCloudinaryUrl = (value = '') => {
+  return /res\.cloudinary\.com\/.+\/video\/upload/i.test(String(value));
+};
+
 const isDirectVideoUrl = (value = '') => {
   const normalizedUrl = normalizeUrl(value);
 
   if (!normalizedUrl) {
     return false;
+  }
+
+  if (isCloudinaryUrl(normalizedUrl)) {
+    return true;
   }
 
   return DIRECT_VIDEO_PATTERN.test(new URL(normalizedUrl).pathname);
@@ -162,6 +179,7 @@ const createProject = async (req, res, next) => {
       gridStyle,
       title: customTitle,
       thumbnailUrl: customThumbnailUrl,
+      isAi: rawIsAi,
     } = req.body;
     const sourceInput = resolveSourceInput({
       videoUrl,
@@ -191,11 +209,11 @@ const createProject = async (req, res, next) => {
 
     const duplicateQuery = sourceInput.sourceType === 'vimeo'
       ? {
-          $or: [
-            { sourceType: 'vimeo', vimeoId: sourceInput.vimeoId },
-            { videoUrl: sourceInput.videoUrl },
-          ],
-        }
+        $or: [
+          { sourceType: 'vimeo', vimeoId: sourceInput.vimeoId },
+          { videoUrl: sourceInput.videoUrl },
+        ],
+      }
       : { videoUrl: sourceInput.videoUrl };
 
     const existingProject = await Project.findOne(duplicateQuery).select('_id').lean();
@@ -246,6 +264,7 @@ const createProject = async (req, res, next) => {
       ...projectPayload,
       order: assignedOrder,
       gridStyle: resolvedGridStyle,
+      isAi: normalizeBoolean(rawIsAi) === true,
     });
 
     return res.status(201).json(project);
@@ -348,6 +367,7 @@ const updateProject = async (req, res, next) => {
       videoUrl: rawVideoUrl,
       vimeoId: rawVimeoId,
       vimeoUrl: rawVimeoUrl,
+      isAi: rawIsAi,
     } = req.body;
 
     const update = {};
@@ -368,6 +388,11 @@ const updateProject = async (req, res, next) => {
       update.gridStyle = normalized;
     }
 
+    if (rawIsAi !== undefined) {
+      const normalized = normalizeBoolean(rawIsAi);
+      if (normalized !== undefined) update.isAi = normalized;
+    }
+
     if (rawVideoUrl !== undefined || rawVimeoId !== undefined || rawVimeoUrl !== undefined) {
       const sourceInput = resolveSourceInput({ videoUrl: rawVideoUrl, vimeoUrl: rawVimeoUrl, vimeoId: rawVimeoId });
 
@@ -377,11 +402,11 @@ const updateProject = async (req, res, next) => {
 
       const duplicateQuery = sourceInput.sourceType === 'vimeo'
         ? {
-            $or: [
-              { sourceType: 'vimeo', vimeoId: sourceInput.vimeoId },
-              { videoUrl: sourceInput.videoUrl },
-            ],
-          }
+          $or: [
+            { sourceType: 'vimeo', vimeoId: sourceInput.vimeoId },
+            { videoUrl: sourceInput.videoUrl },
+          ],
+        }
         : { videoUrl: sourceInput.videoUrl };
 
       const existingProject = await Project.findOne({

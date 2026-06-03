@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const GRID_STYLES = ['full', 'half-top', 'half-bottom'];
-const SOURCE_TYPES = ['vimeo', 'direct', 'external'];
+const SOURCE_TYPES = ['vimeo', 'direct', 'external', 'cloudinary'];
 
 const projectSchema = new mongoose.Schema(
   {
@@ -30,6 +30,10 @@ const projectSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: '',
+    },
+    isAi: {
+      type: Boolean,
+      default: false,
     },
     order: {
       type: Number,

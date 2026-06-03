@@ -162,16 +162,26 @@
   opacity: 0;
   transform: translateY(-10px);
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  color: inherit;
 }
 
 .card-logo svg {
   width: 100%;
   height: 100%;
+
+}
+
+.card-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* make icons appear white similar to client logos */
+  filter: brightness(0) invert(1) opacity(0.8);
+  transition: filter 0.3s ease, opacity 0.3s ease;
 }
 
 .card-content {
   width: 100%;
+
 }
 
 .card-content h3 {
@@ -185,6 +195,7 @@
   margin: 0;
   font-size: 1rem;
   transition: color 0.3s ease;
+
 }
 
 .bento-card:hover .card-logo {
@@ -195,62 +206,41 @@
 /* Specific Grid Placements & Hover Colors matching the video */
 .card-email {
   grid-area: 1 / 1 / 2 / 2;
+
 }
 
-.card-email:hover {
-  background-color: #2d5a8c;
-}
-
-.card-email:hover .card-logo {
-  color: #ffffff;
+.card-email {
+  grid-area: 1 / 1 / 2 / 2;
 }
 
 .card-linkedin {
   grid-area: 1 / 2 / 2 / 3;
 }
 
-.card-linkedin:hover {
-  background-color: #0077b5;
-}
-
-.card-linkedin:hover .card-logo {
-  color: #ffffff;
-}
-
 .card-instagram {
   grid-area: 2 / 1 / 3 / 2;
-}
-
-.card-instagram:hover {
-  background-color: #e1306c;
-}
-
-.card-instagram:hover .card-logo {
-  color: #ffffff;
 }
 
 .card-vimeo {
   grid-area: 2 / 2 / 3 / 3;
 }
 
-.card-vimeo:hover {
-  background-color: #1ab7ea;
-}
-
-.card-vimeo:hover .card-logo {
-  color: #ffffff;
-}
-
 .card-phone {
   grid-area: 3 / 1 / 4 / 3;
 }
 
+/* Use a simple greyish hover like the clients grid */
+.card-email:hover,
+.card-linkedin:hover,
+.card-instagram:hover,
+.card-vimeo:hover,
 .card-phone:hover {
-  background-color: #25d366;
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
-.card-phone:hover .card-logo {
-  color: #ffffff;
+.bento-card:hover .card-logo img {
+  filter: brightness(0) invert(1) opacity(1);
+  opacity: 1;
 }
 
 .bento-card:hover .card-content p {

@@ -82,10 +82,6 @@ function WorkPage() {
           />
         </a>
 
-        <a aria-label="Back to home" className="work-page-orb" href="/">
-          ✦
-        </a>
-
         <nav className="site-nav">
           <a href="/">Home</a>
           <a aria-current="page" href="#work-grid">
@@ -96,51 +92,104 @@ function WorkPage() {
       </header>
 
       <main className="work-page-main">
-        <section className="work-page-grid" id="work-grid">
-          {status === "success" && projects.length ? (
-            projects.map((item, index) => (
-              <article
-                className={getWorkCardVariant(index, projects.length)}
-                key={item.id}
-                onClick={() => setActiveProject(item.raw)}
-                role="presentation"
-              >
-                <div className="work-project-media">
-                  <ProjectPreviewMedia item={item} />
-                </div>
+        {status === "success" && projects.length ? (
+          (() => {
+            const aiProjects = projects.filter((p) => p.raw?.isAi);
+            const otherProjects = projects.filter((p) => !p.raw?.isAi);
 
-                <div className="work-project-copy">
-                  <h2 className="work-project-title">{item.title}</h2>
-                  <p className="work-project-meta">
-                    {getProjectMetaLabel(item, "full")}
-                  </p>
-                </div>
-              </article>
-            ))
-          ) : (
-            <section className="work-empty-state" aria-live="polite">
-              <div className="work-empty-card">
-                <h2>
-                  {status === "loading"
-                    ? "Loading work..."
-                    : "No projects found"}
-                </h2>
-                <p>
-                  {status === "error"
-                    ? errorMessage
-                    : "Publish videos through the hidden /Admin page to populate this work archive."}
-                </p>
-              </div>
-            </section>
-          )}
-        </section>
+            return (
+              <>
+                {aiProjects.length ? (
+                  <section className="work-page-ai" id="ai-work">
+                    <h2 className="work-ai-heading">AI Videos</h2>
+                    <div className="work-ai-grid">
+                      {aiProjects.map((item, index) => {
+                        const isPlayable = Boolean(
+                          item.raw?.vimeoId || item.raw?.videoUrl,
+                        );
+
+                        return (
+                          <article
+                            className={`work-project-card work-project-card-compact ${isPlayable ? "" : "unplayable"}`}
+                            key={item.id}
+                            onClick={() =>
+                              isPlayable && setActiveProject(item.raw)
+                            }
+                            role="presentation"
+                          >
+                            <div className="work-project-media">
+                              <ProjectPreviewMedia item={item} />
+                              {!isPlayable ? (
+                                <div className="work-unplayable-label">
+                                  No playable source
+                                </div>
+                              ) : null}
+                            </div>
+
+                            <div className="work-project-copy">
+                              <h2 className="work-project-title">
+                                {item.title}
+                              </h2>
+                              <p className="work-project-meta">
+                                {getProjectMetaLabel(item, "full")} • AI Video
+                              </p>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  </section>
+                ) : null}
+
+                <section className="work-page-grid" id="work-grid">
+                  <h2 className="work-ai-heading">Our Videos</h2>
+                  {otherProjects.map((item, index) => (
+                    <article
+                      className={getWorkCardVariant(
+                        index,
+                        otherProjects.length,
+                      )}
+                      key={item.id}
+                      onClick={() => setActiveProject(item.raw)}
+                      role="presentation"
+                    >
+                      <div className="work-project-media">
+                        <ProjectPreviewMedia item={item} />
+                      </div>
+
+                      <div className="work-project-copy">
+                        <h2 className="work-project-title">{item.title}</h2>
+                        <p className="work-project-meta">
+                          {getProjectMetaLabel(item, "full")}
+                        </p>
+                      </div>
+                    </article>
+                  ))}
+                </section>
+              </>
+            );
+          })()
+        ) : (
+          <section className="work-empty-state" aria-live="polite">
+            <div className="work-empty-card">
+              <h2>
+                {status === "loading" ? "Loading work..." : "No projects found"}
+              </h2>
+              <p>
+                {status === "error"
+                  ? errorMessage
+                  : "Publish videos through the hidden /Admin page to populate this work archive."}
+              </p>
+            </div>
+          </section>
+        )}
 
         <section className="work-page-contact" id="work-contact">
           <div className="work-page-contact-copy">
             <h2 className="work-page-contact-title">
               Got a project in mind? <span>Let&apos;s talk</span>
             </h2>
-            <div className="work-page-contact-blob"></div>
+            {/* <div className="work-page-contact-blob"></div> */}
           </div>
 
           <div className="work-page-footer">
