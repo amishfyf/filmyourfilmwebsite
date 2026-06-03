@@ -85,6 +85,14 @@
   flex-grow: 1;
   /* allow it to stretch down to the bottom of the card and fill the row */
   min-height: 0;
+  opacity: 0.6;
+  filter: grayscale(100%);
+  transition: opacity 0.4s ease, filter 0.4s ease;
+}
+
+.work-project-card:hover .work-project-media {
+  opacity: 1;
+  filter: grayscale(0%);
 }
 
 .work-project-card-wide .work-project-media,
@@ -231,7 +239,8 @@
 }
 
 .work-page-contact-title a:hover span {
-  color: #25d366; /* WhatsApp Green */
+  color: #25d366;
+  /* WhatsApp Green */
   opacity: 0.9;
 }
 

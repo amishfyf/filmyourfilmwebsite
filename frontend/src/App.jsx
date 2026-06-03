@@ -8,6 +8,7 @@ import Contact from "./components/Contact";
 import ClientGrid from "./components/ClientGrid";
 import VideoModal from "./components/VideoModal";
 import WorkPage from "./components/WorkPage";
+import BlurryCursor from "./components/BlurryCursor";
 import "./App.css";
 
 function App() {
@@ -77,8 +78,10 @@ function App() {
   }, [isAdminRoute, isWorkRoute, loading]);
 
   return (
-    <Routes>
-      <Route path="/admin" element={<AdminPage />} />
+    <>
+      {!isAdminRoute && <BlurryCursor />}
+      <Routes>
+        <Route path="/admin" element={<AdminPage />} />
       <Route path="/work" element={<WorkPage />} />
       <Route
         path="*"
@@ -123,6 +126,7 @@ function App() {
         }
       />
     </Routes>
+    </>
   );
 }
 
