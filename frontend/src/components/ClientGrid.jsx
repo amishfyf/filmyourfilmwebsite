@@ -16,7 +16,10 @@ const LOGOS = [
   'RoyalEnfield.png',
   'toothsi.png',
   'UrbanCompany.png',
-  'Vistara.png'
+  'Vistara.png',
+  'IndiaGate.png',
+  'Amazon.png',
+  'Powerade.png'
 ];
 
 const NUM_CELLS = 8;
@@ -51,7 +54,7 @@ export default function ClientGrid() {
       }));
 
       tickRef.current = k + 1;
-    }, 2000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
