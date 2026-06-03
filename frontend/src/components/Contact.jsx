@@ -35,27 +35,21 @@ export default function Contact() {
     setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setStatus("loading");
 
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+    const messageText = `Hey Film Your Film,\n\nName: ${formData.name}\nEmail: ${formData.email}\nMessage: ${formData.message}`;
+    const whatsappUrl = `https://wa.me/919560699224?text=${encodeURIComponent(messageText)}`;
 
-      if (response.ok) {
-        setStatus("success");
-        setFormData({ name: "", email: "", message: "" });
-      } else {
-        setStatus("error");
-      }
-    } catch (error) {
-      console.error("Submission failed", error);
-      setStatus("error");
-    }
+    // Open WhatsApp in a new tab
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+
+    setStatus("success");
+    setFormData({ name: "", email: "", message: "" });
+    setTimeout(() => {
+      setStatus("idle");
+    }, 3000);
   };
 
   return (
@@ -132,7 +126,7 @@ export default function Contact() {
             className="bento-card card-email"
           >
             <div className="card-logo">
-              <img src="/email.svg" alt="Email" />
+              <i className="fa-solid fa-envelope"></i>
             </div>
             <div className="card-content">
               <h3>Email</h3>
@@ -147,7 +141,7 @@ export default function Contact() {
             className="bento-card card-linkedin"
           >
             <div className="card-logo">
-              <img src="/linkedin.svg" alt="LinkedIn" />
+              <i className="fa-brands fa-linkedin-in"></i>
             </div>
             <div className="card-content">
               <h3>LinkedIn</h3>
@@ -162,7 +156,7 @@ export default function Contact() {
             className="bento-card card-instagram"
           >
             <div className="card-logo">
-              <img src="/instagram.svg" alt="Instagram" />
+              <i className="fa-brands fa-instagram"></i>
             </div>
             <div className="card-content">
               <h3>Instagram</h3>
@@ -177,7 +171,7 @@ export default function Contact() {
             className="bento-card card-vimeo"
           >
             <div className="card-logo">
-              <img src="/vimeo.svg" alt="Vimeo" />
+              <i className="fa-brands fa-vimeo-v"></i>
             </div>
             <div className="card-content">
               <h3>Vimeo</h3>
@@ -185,13 +179,13 @@ export default function Contact() {
             </div>
           </a>
 
-          <a href="tel:9888899224" className="bento-card card-phone">
+          <a href="tel:9560699224" className="bento-card card-phone">
             <div className="card-logo">
-              <img src="/phone.svg" alt="Phone" />
+              <i className="fa-solid fa-phone"></i>
             </div>
             <div className="card-content">
               <h3>Phone</h3>
-              <p>+91 9888899224</p>
+              <p>+91 9560699224</p>
             </div>
           </a>
         </div>

@@ -169,15 +169,7 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
 
             <div className="scroll-indicator-horizontal">
               <span>Scroll to explore</span>
-              <svg className="scroll-indicator-arrow" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M5 12H19M19 12L13 6M19 12L13 18"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <i className="fa-solid fa-arrow-right-long scroll-indicator-arrow"></i>
             </div>
           </div>
         </section>

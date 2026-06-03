@@ -217,10 +217,21 @@
   font-weight: 400;
 }
 
+.work-page-contact-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
 .work-page-contact-title span {
   text-decoration: underline;
   text-underline-offset: 0.12em;
   font-weight: 700;
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+.work-page-contact-title a:hover span {
+  color: #25d366; /* WhatsApp Green */
+  opacity: 0.9;
 }
 
 .work-page-contact-blob {

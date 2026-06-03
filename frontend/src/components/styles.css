@@ -481,8 +481,10 @@ html {
 }
 
 .scroll-indicator-arrow {
-  width: 18px;
-  height: 18px;
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   animation: scrollNudge 1.6s infinite ease-in-out;
 }
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import { fetchProjects } from "../services/projectsApi";
 import VideoModal from "./VideoModal";
 import {
@@ -74,16 +75,16 @@ function WorkPage() {
   return (
     <div className="work-page-shell">
       <header className="site-header site-header-work">
-        <a className="site-logo" href="/">
+        <Link className="site-logo" to="/">
           <img
             alt="Film Your Film"
             className="site-logo-mark"
             src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
           />
-        </a>
+        </Link>
 
         <nav className="site-nav">
-          <a href="/">Home</a>
+          <Link to="/">Home</Link>
           <a aria-current="page" href="#work-grid">
             Work
           </a>
@@ -142,7 +143,7 @@ function WorkPage() {
                 ) : null}
 
                 <section className="work-page-grid" id="work-grid">
-                  <h2 className="work-ai-heading">Our Videos</h2>
+                  <h2 className="work-ai-heading">Cinema Videos</h2>
                   {otherProjects.map((item, index) => (
                     <article
                       className={getWorkCardVariant(
@@ -187,7 +188,14 @@ function WorkPage() {
         <section className="work-page-contact" id="work-contact">
           <div className="work-page-contact-copy">
             <h2 className="work-page-contact-title">
-              Got a project in mind? <span>Let&apos;s talk</span>
+              Got a project in mind?{" "}
+              <a
+                href="https://wa.me/919560699224?text=Hey%20Film%20your%20Film%2C%20lets%20talk%20on%20our%20Project"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span>Let&apos;s talk</span>
+              </a>
             </h2>
             {/* <div className="work-page-contact-blob"></div> */}
           </div>
@@ -195,9 +203,7 @@ function WorkPage() {
           <div className="work-page-footer">
             <p className="work-page-footer-brand">filmyourfilm.com</p>
             <nav className="work-page-footer-nav">
-              <a href="#work-grid">Work</a>
-              <a href="/#home">Home</a>
-              <a href="/#contact">Contact</a>
+              <Link to="/">Home</Link>
             </nav>
           </div>
         </section>

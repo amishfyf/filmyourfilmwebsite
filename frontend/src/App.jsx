@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link, useLocation, Routes, Route } from "react-router";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import AdminPage from "./components/AdminPage";
@@ -9,13 +10,9 @@ import VideoModal from "./components/VideoModal";
 import WorkPage from "./components/WorkPage";
 import "./App.css";
 
-const getNormalizedPath = () => {
-  const pathname = window.location.pathname.replace(/\/+$/, "");
-  return pathname || "/";
-};
-
 function App() {
-  const normalizedPath = getNormalizedPath().toLowerCase();
+  const location = useLocation();
+  const normalizedPath = location.pathname.toLowerCase().replace(/\/+$/, "") || "/";
   const isAdminRoute = normalizedPath === "/admin";
   const isWorkRoute = normalizedPath === "/work";
   const [activeProject, setActiveProject] = useState(null);
@@ -33,18 +30,27 @@ function App() {
     });
 
     window.lenis = lenis;
-    lenis.stop();
-    document.body.style.overflow = "hidden";
 
-    const fadeTimeout = setTimeout(() => {
-      setFade(true);
-    }, 1000);
+    let fadeTimeout;
+    let endTimeout;
 
-    const endTimeout = setTimeout(() => {
-      setLoading(false);
+    if (loading) {
+      lenis.stop();
+      document.body.style.overflow = "hidden";
+
+      fadeTimeout = setTimeout(() => {
+        setFade(true);
+      }, 1000);
+
+      endTimeout = setTimeout(() => {
+        setLoading(false);
+        lenis.start();
+        document.body.style.overflow = "";
+      }, 1500);
+    } else {
       lenis.start();
       document.body.style.overflow = "";
-    }, 1500);
+    }
 
     // Handle smooth scrolling for anchor links to prevent the `#contact` URL jump
     const handleAnchorClick = (e) => {
@@ -62,60 +68,61 @@ function App() {
 
     return () => {
       document.removeEventListener("click", handleAnchorClick);
-      clearTimeout(fadeTimeout);
-      clearTimeout(endTimeout);
+      if (fadeTimeout) clearTimeout(fadeTimeout);
+      if (endTimeout) clearTimeout(endTimeout);
       lenis.destroy();
       window.lenis = null;
       document.body.style.overflow = "";
     };
-  }, [isAdminRoute, isWorkRoute]);
-
-  if (isAdminRoute) {
-    return <AdminPage />;
-  }
-
-  if (isWorkRoute) {
-    return <WorkPage />;
-  }
+  }, [isAdminRoute, isWorkRoute, loading]);
 
   return (
-    <div className="app-shell">
-      {loading && (
-        <div className={`fullscreen-loader ${fade ? "fade-out" : ""}`}>
-          <img
-            alt="Film Your Film"
-            className="loader-logo-mark"
-            src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
-          />
-        </div>
-      )}
+    <Routes>
+      <Route path="/admin" element={<AdminPage />} />
+      <Route path="/work" element={<WorkPage />} />
+      <Route
+        path="*"
+        element={
+          <div className="app-shell">
+            {loading && (
+              <div className={`fullscreen-loader ${fade ? "fade-out" : ""}`}>
+                <img
+                  alt="Film Your Film"
+                  className="loader-logo-mark"
+                  src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
+                />
+              </div>
+            )}
 
-      <header className="site-header">
-        <a className="site-logo" href="#home">
-          <img
-            alt="Film Your Film"
-            className="site-logo-mark"
-            src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
-          />
-        </a>
-        <nav className="site-nav">
-          <a href="#home">Home</a>
-          <a href="/work">Work</a>
-          <a href="#contact">Contact</a>
-        </nav>
-      </header>
+            <header className="site-header">
+              <a className="site-logo" href="#home">
+                <img
+                  alt="Film Your Film"
+                  className="site-logo-mark"
+                  src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
+                />
+              </a>
+              <nav className="site-nav">
+                <a href="#home">Home</a>
+                <a href="/work">Work</a>
+                <a href="#contact">Contact</a>
+              </nav>
+            </header>
 
-      <main className="site-main">
-        <HorizontalScroll onSelectProject={setActiveProject} loading={loading} />
-        <ClientGrid />
-        <Contact />
-      </main>
+            <main className="site-main">
+              <HorizontalScroll onSelectProject={setActiveProject} loading={loading} />
+              <ClientGrid />
+              <Contact />
+            </main>
 
-      <VideoModal
-        project={activeProject}
-        onClose={() => setActiveProject(null)}
+            <VideoModal
+              project={activeProject}
+              onClose={() => setActiveProject(null)}
+            />
+          </div>
+        }
       />
-    </div>
+    </Routes>
   );
 }
 
