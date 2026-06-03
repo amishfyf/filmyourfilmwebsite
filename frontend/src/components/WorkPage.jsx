@@ -101,44 +101,42 @@ function WorkPage() {
             return (
               <>
                 {aiProjects.length ? (
-                  <section className="work-page-ai" id="ai-work">
+                  <section className="work-page-grid" id="ai-work">
                     <h2 className="work-ai-heading">AI Videos</h2>
-                    <div className="work-ai-grid">
-                      {aiProjects.map((item, index) => {
-                        const isPlayable = Boolean(
-                          item.raw?.vimeoId || item.raw?.videoUrl,
-                        );
+                    {aiProjects.map((item, index) => {
+                      const isPlayable = Boolean(
+                        item.raw?.vimeoId || item.raw?.videoUrl,
+                      );
 
-                        return (
-                          <article
-                            className={`work-project-card work-project-card-compact ${isPlayable ? "" : "unplayable"}`}
-                            key={item.id}
-                            onClick={() =>
-                              isPlayable && setActiveProject(item.raw)
-                            }
-                            role="presentation"
-                          >
-                            <div className="work-project-media">
-                              <ProjectPreviewMedia item={item} />
-                              {!isPlayable ? (
-                                <div className="work-unplayable-label">
-                                  No playable source
-                                </div>
-                              ) : null}
-                            </div>
+                      return (
+                        <article
+                          className={`${getWorkCardVariant(index, aiProjects.length)} ${isPlayable ? "" : "unplayable"}`}
+                          key={item.id}
+                          onClick={() =>
+                            isPlayable && setActiveProject(item.raw)
+                          }
+                          role="presentation"
+                        >
+                          <div className="work-project-media">
+                            <ProjectPreviewMedia item={item} />
+                            {!isPlayable ? (
+                              <div className="work-unplayable-label">
+                                No playable source
+                              </div>
+                            ) : null}
+                          </div>
 
-                            <div className="work-project-copy">
-                              <h2 className="work-project-title">
-                                {item.title}
-                              </h2>
-                              <p className="work-project-meta">
-                                {getProjectMetaLabel(item, "full")} • AI Video
-                              </p>
-                            </div>
-                          </article>
-                        );
-                      })}
-                    </div>
+                          <div className="work-project-copy">
+                            <h2 className="work-project-title">
+                              {item.title}
+                            </h2>
+                            <p className="work-project-meta">
+                              {getProjectMetaLabel(item, "full")} • AI Video
+                            </p>
+                          </div>
+                        </article>
+                      );
+                    })}
                   </section>
                 ) : null}
 
