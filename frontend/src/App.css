@@ -207,11 +207,9 @@
 .admin-shell {
   min-height: 100vh;
   padding: 2rem;
-  background:
-    radial-gradient(circle at top left, rgba(209, 171, 98, 0.16), transparent 24%),
-    radial-gradient(circle at right center, rgba(124, 42, 17, 0.18), transparent 28%),
-    linear-gradient(180deg, #090807 0%, #11100d 100%);
-  color: #f4efe6;
+  background: #000;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
 }
 
 .admin-header,
@@ -231,7 +229,7 @@
 
 .admin-header {
   margin: 0 auto 2rem;
-  width: min(1220px, 100%);
+  width: min(1400px, 100%);
 }
 
 .admin-header-actions,
@@ -252,7 +250,7 @@
 .admin-eyebrow,
 .admin-caption,
 .admin-project-order {
-  color: rgba(244, 239, 230, 0.62);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.76rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -262,62 +260,67 @@
 .admin-section-heading h2,
 .admin-project-copy h3 {
   margin: 0;
+  font-weight: 500;
 }
 
 .admin-title {
-  font-size: clamp(2.5rem, 6vw, 4.8rem);
-  line-height: 0.94;
-  letter-spacing: -0.06em;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.admin-section-heading h2 {
+  font-size: 1.5rem;
+  margin-top: 0.25rem;
 }
 
 .admin-main {
   margin: 0 auto;
-  width: min(1220px, 100%);
+  width: min(1400px, 100%);
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .admin-grid {
   display: grid;
-  /* 3-column layout: ingestion | normal projects | AI projects */
-  grid-template-columns: minmax(320px, 420px) minmax(320px, 1fr) minmax(260px, 360px);
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 1.5rem;
   align-items: start;
 }
 
 .admin-card {
-  border: 1px solid rgba(244, 239, 230, 0.12);
-  border-radius: 24px;
-  padding: 1.4rem;
-  background: rgba(19, 16, 13, 0.82);
-  backdrop-filter: blur(24px);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(12px);
 }
 
 .admin-auth-card {
   margin: 12vh auto 0;
-  width: min(520px, 100%);
+  width: min(480px, 100%);
 }
 
 .admin-auth-form,
 .admin-form,
 .admin-project-list {
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .admin-form {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
 .admin-field {
   display: grid;
-  gap: 0.45rem;
+  gap: 0.5rem;
 }
 
 .admin-field span {
-  color: rgba(244, 239, 230, 0.68);
-  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-weight: 500;
 }
 
 .admin-field-wide {
@@ -325,27 +328,37 @@
 }
 
 .admin-field-compact {
-  width: 180px;
+  width: 100%;
 }
 
 .admin-field input,
 .admin-field select,
 .admin-button,
 .admin-link {
-  border-radius: 16px;
-  border: 1px solid rgba(244, 239, 230, 0.14);
-  color: #f4efe6;
-  background: rgba(244, 239, 230, 0.04);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.03);
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
 }
 
 .admin-field input,
 .admin-field select {
   width: 100%;
-  padding: 0.95rem 1rem;
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+}
+
+.admin-field input:focus,
+.admin-field select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .admin-field input::placeholder {
-  color: rgba(244, 239, 230, 0.34);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .admin-button,
@@ -353,90 +366,117 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 48px;
-  padding: 0.8rem 1rem;
-  font-weight: 600;
+  min-height: 44px;
+  padding: 0.75rem 1.2rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+  background: #fff;
+  color: #000;
+  border: none;
 }
 
 .admin-button:hover,
 .admin-link:hover {
   transform: translateY(-1px);
-  background: rgba(244, 239, 230, 0.08);
-  border-color: rgba(244, 239, 230, 0.22);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .admin-button:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
   transform: none;
 }
 
 .admin-button-muted {
-  background: rgba(244, 239, 230, 0.02);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-button-muted:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .admin-button-small {
-  min-height: 40px;
-  min-width: 70px;
-  padding: 0.65rem 0.85rem;
+  min-height: 36px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
 }
 
 .admin-project-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1rem;
-  border: 1px solid rgba(244, 239, 230, 0.1);
-  border-radius: 18px;
-  background: rgba(244, 239, 230, 0.03);
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  flex-wrap: wrap;
 }
 
 .admin-project-copy {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 200px;
 }
 
 .admin-project-copy a {
-  color: #f0c978;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.admin-project-copy p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
 }
 
 .admin-project-controls {
-  display: grid;
-  justify-items: end;
-  gap: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
 }
 
 .admin-empty-state,
 .admin-feedback {
-  border-radius: 18px;
-  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
 }
 
-.admin-row-actions {
+.admin-row-actions,
+.admin-actions-group {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .admin-empty-state {
-  border: 1px dashed rgba(244, 239, 230, 0.14);
-  color: rgba(244, 239, 230, 0.62);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.95rem;
 }
 
 .admin-feedback {
   margin: 0;
+  font-size: 0.95rem;
 }
 
 .admin-feedback-success {
-  border: 1px solid rgba(142, 224, 176, 0.22);
-  background: rgba(60, 112, 78, 0.18);
+  border: 1px solid rgba(142, 224, 176, 0.3);
+  background: rgba(60, 112, 78, 0.2);
+  color: #8ee0b0;
 }
 
 .admin-feedback-error {
-  border: 1px solid rgba(245, 136, 136, 0.24);
-  background: rgba(118, 39, 39, 0.18);
+  border: 1px solid rgba(245, 136, 136, 0.3);
+  background: rgba(118, 39, 39, 0.2);
+  color: #f58888;
 }
 
 @media (max-width: 960px) {
@@ -445,8 +485,8 @@
   }
 
   .admin-project-row {
-    align-items: flex-start;
     flex-direction: column;
+    align-items: stretch;
   }
 
   .admin-project-controls {

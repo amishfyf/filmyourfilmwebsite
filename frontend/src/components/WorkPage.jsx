@@ -177,7 +177,7 @@ function WorkPage() {
               <p>
                 {status === "error"
                   ? errorMessage
-                  : "Publish videos through the hidden /Admin page to populate this work archive."}
+                  : ""}
               </p>
             </div>
           </section>

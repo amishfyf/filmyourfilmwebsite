@@ -92,7 +92,10 @@ function AdminPage() {
   const [projects, setProjects] = useState([]);
   const normalProjects = projects.filter((p) => !p.isAi);
   const aiProjects = projects.filter((p) => p.isAi);
-  const [savedLayoutSignature, setSavedLayoutSignature] = useState(
+  const [savedNormalLayoutSignature, setSavedNormalLayoutSignature] = useState(
+    createLayoutSignature(),
+  );
+  const [savedAiLayoutSignature, setSavedAiLayoutSignature] = useState(
     createLayoutSignature(),
   );
   const [notice, setNotice] = useState("");
@@ -106,12 +109,14 @@ function AdminPage() {
   const [editingProjectId, setEditingProjectId] = useState(null);
 
   const hasLayoutChanges =
-    createLayoutSignature(normalProjects) !== savedLayoutSignature;
+    createLayoutSignature(normalProjects) !== savedNormalLayoutSignature ||
+    createLayoutSignature(aiProjects) !== savedAiLayoutSignature;
 
   useEffect(() => {
     if (!session.token) {
       setProjects([]);
-      setSavedLayoutSignature(createLayoutSignature());
+      setSavedNormalLayoutSignature(createLayoutSignature());
+      setSavedAiLayoutSignature(createLayoutSignature());
       setIsLoadingProjects(false);
       return undefined;
     }
@@ -132,8 +137,11 @@ function AdminPage() {
         }
 
         setProjects(nextProjects);
-        setSavedLayoutSignature(
+        setSavedNormalLayoutSignature(
           createLayoutSignature(nextProjects.filter((p) => !p.isAi)),
+        );
+        setSavedAiLayoutSignature(
+          createLayoutSignature(nextProjects.filter((p) => p.isAi)),
         );
       } catch (error) {
         if (isCancelled) {
@@ -224,8 +232,11 @@ function AdminPage() {
         await fetchAdminProjects(session.token),
       );
       setProjects(nextProjects);
-      setSavedLayoutSignature(
+      setSavedNormalLayoutSignature(
         createLayoutSignature(nextProjects.filter((p) => !p.isAi)),
+      );
+      setSavedAiLayoutSignature(
+        createLayoutSignature(nextProjects.filter((p) => p.isAi)),
       );
       setFormState(DEFAULT_FORM_STATE);
     } catch (error) {
@@ -272,8 +283,11 @@ function AdminPage() {
         await fetchAdminProjects(session.token),
       );
       setProjects(nextProjects);
-      setSavedLayoutSignature(
+      setSavedNormalLayoutSignature(
         createLayoutSignature(nextProjects.filter((p) => !p.isAi)),
+      );
+      setSavedAiLayoutSignature(
+        createLayoutSignature(nextProjects.filter((p) => p.isAi)),
       );
       setNotice("Project deleted.");
     } catch (error) {
@@ -300,8 +314,11 @@ function AdminPage() {
         await fetchAdminProjects(session.token),
       );
       setProjects(nextProjects);
-      setSavedLayoutSignature(
+      setSavedNormalLayoutSignature(
         createLayoutSignature(nextProjects.filter((p) => !p.isAi)),
+      );
+      setSavedAiLayoutSignature(
+        createLayoutSignature(nextProjects.filter((p) => p.isAi)),
       );
     } catch (error) {
       if (isAuthError(error.message)) {
@@ -338,6 +355,29 @@ function AdminPage() {
     setNotice("");
   };
 
+  const moveAiProject = (aiIndex, direction) => {
+    setProjects((current) => {
+      const ai = current.filter((p) => p.isAi);
+      const targetIndex = aiIndex + direction;
+
+      if (targetIndex < 0 || targetIndex >= ai.length) {
+        return current;
+      }
+
+      const nextAi = [...ai];
+      const [selected] = nextAi.splice(aiIndex, 1);
+      nextAi.splice(targetIndex, 0, selected);
+
+      let aiCursor = 0;
+      const merged = current.map((item) =>
+        !item.isAi ? item : nextAi[aiCursor++],
+      );
+
+      return merged;
+    });
+    setNotice("");
+  };
+
   const updateProjectGridStyle = (projectId, nextGridStyle) => {
     setProjects((current) =>
       current.map((project) =>
@@ -365,17 +405,21 @@ function AdminPage() {
       const nextProjects = sortProjects(
         await reorderAdminProjects(
           session.token,
-          projects
-            .filter((p) => !p.isAi)
-            .map((project) => ({
-              id: project._id,
-              gridStyle: project.gridStyle || "full",
-            })),
+          [
+            ...projects.filter((p) => !p.isAi),
+            ...projects.filter((p) => p.isAi),
+          ].map((project) => ({
+            id: project._id,
+            gridStyle: project.gridStyle || "full",
+          })),
         ),
       );
       setProjects(nextProjects);
-      setSavedLayoutSignature(
+      setSavedNormalLayoutSignature(
         createLayoutSignature(nextProjects.filter((p) => !p.isAi)),
+      );
+      setSavedAiLayoutSignature(
+        createLayoutSignature(nextProjects.filter((p) => p.isAi)),
       );
       setNotice("Project layout saved.");
     } catch (error) {
@@ -608,8 +652,7 @@ function AdminPage() {
                         </div>
 
                         <div className="admin-project-controls">
-                          <label className="admin-field admin-field-compact">
-                            <span>Grid style</span>
+                          <div className="admin-field admin-field-compact">
                             <select
                               onChange={(event) =>
                                 updateProjectGridStyle(
@@ -625,9 +668,9 @@ function AdminPage() {
                                 </option>
                               ))}
                             </select>
-                          </label>
+                          </div>
 
-                          <div className="admin-order-actions">
+                          <div className="admin-actions-group">
                             <button
                               className="admin-button admin-button-small admin-button-muted"
                               disabled={index === 0}
@@ -644,8 +687,6 @@ function AdminPage() {
                             >
                               Down
                             </button>
-                          </div>
-                          <div className="admin-row-actions">
                             <button
                               className="admin-button admin-button-small"
                               onClick={() => handleEditProject(project)}
@@ -680,13 +721,32 @@ function AdminPage() {
                     <p className="admin-eyebrow">AI Projects</p>
                     <h2>AI Video items</h2>
                   </div>
+
+                  <div className="admin-inline-actions">
+                    <button
+                      className="admin-button admin-button-muted"
+                      onClick={handleRefreshProjects}
+                      type="button"
+                    >
+                      {isLoadingProjects ? "Refreshing..." : "Refresh"}
+                    </button>
+                    <button
+                      className="admin-button"
+                      disabled={isSavingLayout || !hasLayoutChanges}
+                      onClick={handleSaveLayout}
+                      type="button"
+                    >
+                      {isSavingLayout ? "Saving..." : "Save layout"}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="admin-project-list">
                   {aiProjects.length ? (
-                    aiProjects.map((project) => (
+                    aiProjects.map((project, index) => (
                       <article className="admin-project-row" key={project._id}>
                         <div className="admin-project-copy">
+                          <p className="admin-project-order">#{index + 1}</p>
                           <h3>{project.title}</h3>
                           <p>
                             {project.sourceType || "external"} source • AI Video
@@ -701,8 +761,7 @@ function AdminPage() {
                         </div>
 
                         <div className="admin-project-controls">
-                          <label className="admin-field admin-field-compact">
-                            <span>Grid style</span>
+                          <div className="admin-field admin-field-compact">
                             <select
                               onChange={(event) =>
                                 updateProjectGridStyle(
@@ -718,9 +777,25 @@ function AdminPage() {
                                 </option>
                               ))}
                             </select>
-                          </label>
+                          </div>
 
-                          <div className="admin-row-actions">
+                          <div className="admin-actions-group">
+                            <button
+                              className="admin-button admin-button-small admin-button-muted"
+                              disabled={index === 0}
+                              onClick={() => moveAiProject(index, -1)}
+                              type="button"
+                            >
+                              Up
+                            </button>
+                            <button
+                              className="admin-button admin-button-small admin-button-muted"
+                              disabled={index === aiProjects.length - 1}
+                              onClick={() => moveAiProject(index, 1)}
+                              type="button"
+                            >
+                              Down
+                            </button>
                             <button
                               className="admin-button admin-button-small"
                               onClick={() => handleEditProject(project)}

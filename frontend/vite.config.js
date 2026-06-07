@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         // target: 'http://localhost:5000',
-        target: 'https://filmyourfilm.vercel.app',
+        target: 'https://filmyourfilm-78lq.vercel.app',
         changeOrigin: true,
       },
     },
