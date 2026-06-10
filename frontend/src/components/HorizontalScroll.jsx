@@ -141,7 +141,7 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
   return (
     <div className="scroll-wrapper" ref={wrapperRef}>
       <div className="horizontal-track" ref={trackRef}>
-        <section className="hero-section horizontal-panel" id="home" style={{ position: "relative" }}>
+        <section className="hero-section horizontal-panel" id="home" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
           {heroVideoUrl && (
             <video 
               autoPlay 
@@ -162,29 +162,65 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
               }}
             />
           )}
-          <div className="hero-left" style={{ position: "relative", zIndex: 1 }}>
-            <h1 className="hero-title" style={{ fontSize: "clamp(3rem, 6vw, 6rem)", maxWidth: "800px" }}>
-              Lights, camera, also AI
+          <div 
+            className="hero-content" 
+            style={{ 
+              position: "relative", 
+              zIndex: 1, 
+              display: "flex", 
+              flexDirection: "column", 
+              alignItems: "center", 
+              justifyContent: "center", 
+              width: "100%", 
+              height: "100%", 
+              textAlign: "center",
+              gap: "2.5rem"
+            }}
+          >
+            <h1 className="hero-title" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 900, fontSize: "clamp(4rem, 9vw, 8.5rem)", letterSpacing: "-0.03em", maxWidth: "1200px", margin: 0, lineHeight: 1 }}>
+              Lights, camera,<br />& AI
             </h1>
-          </div>
-
-          <div className="hero-right" style={{ position: "relative", zIndex: 1 }}>
-            <div className="hero-selector-vertical">
+            
+            <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
               <button
-                className={`selector-btn-v ${showcaseType === "cinema" ? "active" : ""}`}
+                className="hero-action-btn"
                 onClick={() => handleToggle("cinema")}
+                style={{
+                  padding: "1rem 2.5rem",
+                  borderRadius: "50px",
+                  border: showcaseType === "cinema" ? "1px solid rgba(255,255,255,0.8)" : "1px solid rgba(255,255,255,0.3)",
+                  background: showcaseType === "cinema" ? "rgba(255,255,255,0.1)" : "transparent",
+                  color: "#fff",
+                  fontSize: "1.1rem",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  backdropFilter: "blur(10px)",
+                  transition: "all 0.3s ease"
+                }}
               >
-                Cinema Work
+                TV Commercial
               </button>
               <button
-                className={`selector-btn-v ${showcaseType === "ai" ? "active" : ""}`}
+                className="hero-action-btn"
                 onClick={() => handleToggle("ai")}
+                style={{
+                  padding: "1rem 2.5rem",
+                  borderRadius: "50px",
+                  border: showcaseType === "ai" ? "1px solid rgba(255,255,255,0.8)" : "1px solid rgba(255,255,255,0.3)",
+                  background: showcaseType === "ai" ? "rgba(255,255,255,0.1)" : "transparent",
+                  color: "#fff",
+                  fontSize: "1.1rem",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  backdropFilter: "blur(10px)",
+                  transition: "all 0.3s ease"
+                }}
               >
-                AI Videos
+                AI
               </button>
             </div>
-
-            <div className="scroll-indicator-horizontal">
+            
+            <div className="scroll-indicator-horizontal" style={{ position: "absolute", bottom: "3rem", left: "50%", transform: "translateX(-50%)" }}>
               <span>Scroll to explore</span>
               <i className="fa-solid fa-arrow-right-long scroll-indicator-arrow"></i>
             </div>

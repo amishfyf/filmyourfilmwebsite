@@ -30,7 +30,8 @@ export default function BlurryCursor() {
 
     const isInsideAllowedSection = 
       (target.closest("#home") !== null || target.closest("#contact") !== null) &&
-      target.closest(".selector-btn-v") === null;
+      target.closest(".selector-btn-v") === null &&
+      target.closest(".hero-action-btn") === null;
 
     setIsVisible(isInsideAllowedSection);
 
