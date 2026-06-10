@@ -18,3 +18,11 @@ export const fetchProjects = async (signal) => {
 
   return response.json();
 };
+
+export const fetchHeroSetting = async (signal) => {
+  const response = await fetch(`${API_BASE_URL}/settings/hero`, { signal });
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response, 'Unable to fetch hero setting.'));
+  }
+  return response.json();
+};

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { fetchProjects } from "../services/projectsApi";
+import { fetchProjects, fetchHeroSetting } from "../services/projectsApi";
 import Contact from "./Contact";
 import {
   buildPanels,
@@ -21,6 +21,7 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
   const [status, setStatus] = useState("loading");
   const [errorMessage, setErrorMessage] = useState("");
   const [showcaseType, setShowcaseType] = useState("cinema");
+  const [heroVideoUrl, setHeroVideoUrl] = useState("");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -29,8 +30,12 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
       try {
         setStatus("loading");
         setErrorMessage("");
-        const data = await fetchProjects(controller.signal);
+        const [data, heroSetting] = await Promise.all([
+          fetchProjects(controller.signal),
+          fetchHeroSetting(controller.signal).catch(() => ({ heroVideoUrl: "" }))
+        ]);
         setProjects(Array.isArray(data) ? normalizeProjects(data) : []);
+        setHeroVideoUrl(heroSetting?.heroVideoUrl || "");
         setStatus("success");
       } catch (error) {
         if (error.name === "AbortError") {
@@ -136,22 +141,34 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
   return (
     <div className="scroll-wrapper" ref={wrapperRef}>
       <div className="horizontal-track" ref={trackRef}>
-        <section className="hero-section horizontal-panel" id="home">
-          <div className="hero-left">
-            <p className="hero-kicker">
-              Cinematic systems for brands and stories
-            </p>
-            <h1 className="hero-title">
-              Turning complex ideas into clear,{" "}
-              <span className="serif-italic">scalable creative</span> systems.
+        <section className="hero-section horizontal-panel" id="home" style={{ position: "relative" }}>
+          {heroVideoUrl && (
+            <video 
+              autoPlay 
+              loop 
+              muted 
+              playsInline 
+              src={heroVideoUrl}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                opacity: 0.4,
+                zIndex: 0,
+                pointerEvents: "none"
+              }}
+            />
+          )}
+          <div className="hero-left" style={{ position: "relative", zIndex: 1 }}>
+            <h1 className="hero-title" style={{ fontSize: "clamp(3rem, 6vw, 6rem)", maxWidth: "800px" }}>
+              Lights, camera, also AI
             </h1>
-            <p className="hero-copy">
-              Stories, workflows, and AI-powered content designed to scale across
-              premium digital experiences.
-            </p>
           </div>
 
-          <div className="hero-right">
+          <div className="hero-right" style={{ position: "relative", zIndex: 1 }}>
             <div className="hero-selector-vertical">
               <button
                 className={`selector-btn-v ${showcaseType === "cinema" ? "active" : ""}`}

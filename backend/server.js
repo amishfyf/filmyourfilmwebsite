@@ -5,6 +5,7 @@ const connectDatabase = require('./config/db');
 const adminRoutes = require('./routes/adminRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const settingRoutes = require('./routes/settingRoutes');
 const seedDefaultAdmin = require('./services/seedDefaultAdmin');
 
 dotenv.config();
@@ -41,6 +42,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/admin', adminRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/settings', settingRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found.' });

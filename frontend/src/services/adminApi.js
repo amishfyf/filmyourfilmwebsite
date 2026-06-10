@@ -134,3 +134,27 @@ export const deleteAdminProject = async (token, id) => {
 
   return response.json();
 };
+
+export const fetchHeroSetting = async () => {
+  const response = await fetch(`${API_BASE_URL}/settings/hero`);
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response, 'Unable to fetch hero setting.'));
+  }
+  return response.json();
+};
+
+export const updateHeroSetting = async (token, heroVideoUrl) => {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/settings/hero`,
+    buildAuthorizedRequest(token, {
+      method: 'PATCH',
+      body: JSON.stringify({ heroVideoUrl }),
+    })
+  );
+
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response, 'Unable to update hero setting.'));
+  }
+
+  return response.json();
+};

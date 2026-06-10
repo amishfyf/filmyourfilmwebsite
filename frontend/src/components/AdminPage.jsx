@@ -8,6 +8,8 @@ import {
   reorderAdminProjects,
   updateAdminProject,
   deleteAdminProject,
+  fetchHeroSetting,
+  updateHeroSetting,
 } from "../services/adminApi";
 
 const DEFAULT_FORM_STATE = {
@@ -108,6 +110,11 @@ function AdminPage() {
   const [isSavingLayout, setIsSavingLayout] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState(null);
 
+  const [activeTab, setActiveTab] = useState("hero");
+  const [heroVideoUrl, setHeroVideoUrl] = useState("");
+  const [isSavingHeroVideo, setIsSavingHeroVideo] = useState(false);
+  const [isLoadingHeroVideo, setIsLoadingHeroVideo] = useState(false);
+
   const hasLayoutChanges =
     createLayoutSignature(normalProjects) !== savedNormalLayoutSignature ||
     createLayoutSignature(aiProjects) !== savedAiLayoutSignature;
@@ -125,12 +132,14 @@ function AdminPage() {
 
     const loadProjects = async () => {
       setIsLoadingProjects(true);
+      setIsLoadingHeroVideo(true);
       setErrorMessage("");
 
       try {
-        const nextProjects = sortProjects(
-          await fetchAdminProjects(session.token),
-        );
+        const [nextProjects, heroSetting] = await Promise.all([
+          fetchAdminProjects(session.token).then(sortProjects),
+          fetchHeroSetting().catch(() => ({ heroVideoUrl: "" }))
+        ]);
 
         if (isCancelled) {
           return;
@@ -143,6 +152,7 @@ function AdminPage() {
         setSavedAiLayoutSignature(
           createLayoutSignature(nextProjects.filter((p) => p.isAi)),
         );
+        setHeroVideoUrl(heroSetting.heroVideoUrl || "");
       } catch (error) {
         if (isCancelled) {
           return;
@@ -434,6 +444,28 @@ function AdminPage() {
     }
   };
 
+  const handleSaveHeroVideo = async (event) => {
+    event.preventDefault();
+    setIsSavingHeroVideo(true);
+    setErrorMessage("");
+    setNotice("");
+
+    try {
+      const data = await updateHeroSetting(session.token, heroVideoUrl);
+      setHeroVideoUrl(data.heroVideoUrl);
+      setNotice("Hero video saved.");
+    } catch (error) {
+      if (isAuthError(error.message)) {
+        handleLogout();
+        setErrorMessage("Your admin session expired. Sign in again.");
+      } else {
+        setErrorMessage(error.message);
+      }
+    } finally {
+      setIsSavingHeroVideo(false);
+    }
+  };
+
   return (
     <div className="admin-shell">
       <header className="admin-header">
@@ -487,16 +519,62 @@ function AdminPage() {
             </form>
           </section>
         ) : (
-          <>
-            <section className="admin-grid">
-              <article className="admin-card admin-card-form">
-                <div className="admin-section-heading">
-                  <div>
-                    <p className="admin-eyebrow">Add project</p>
-                    <h2>Any URL works</h2>
-                  </div>
-                  <p className="admin-caption">Signed in as {session.name}</p>
-                </div>
+          <div className="admin-layout-container" style={{ display: "flex", gap: "2rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+            <aside className="admin-sidebar" style={{ width: "250px", flexShrink: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <button 
+                className={`admin-button ${activeTab === 'hero' ? '' : 'admin-button-muted'}`} 
+                onClick={() => setActiveTab('hero')}
+                style={{ justifyContent: "flex-start" }}
+              >
+                Hero Section Videos
+              </button>
+              <button 
+                className={`admin-button ${activeTab === 'work' ? '' : 'admin-button-muted'}`} 
+                onClick={() => setActiveTab('work')}
+                style={{ justifyContent: "flex-start" }}
+              >
+                Work Videos
+              </button>
+            </aside>
+            
+            <div className="admin-content-area" style={{ flexGrow: 1, minWidth: 0 }}>
+              {activeTab === 'hero' && (
+                 <section className="admin-grid" style={{ gridTemplateColumns: "1fr" }}>
+                   <article className="admin-card admin-card-form">
+                     <div className="admin-section-heading">
+                       <div>
+                         <p className="admin-eyebrow">Hero Video</p>
+                         <h2>Set Background Video</h2>
+                       </div>
+                     </div>
+                     <form className="admin-form" onSubmit={handleSaveHeroVideo} style={{ marginTop: "1rem" }}>
+                       <label className="admin-field admin-field-wide">
+                         <span>Video URL</span>
+                         <input
+                           placeholder="https://example.com/video.mp4"
+                           type="url"
+                           value={heroVideoUrl}
+                           onChange={(e) => setHeroVideoUrl(e.target.value)}
+                         />
+                       </label>
+                       <button className="admin-button admin-field-wide" type="submit" disabled={isSavingHeroVideo}>
+                         {isSavingHeroVideo ? "Saving..." : "Save Settings"}
+                       </button>
+                     </form>
+                   </article>
+                 </section>
+              )}
+              
+              {activeTab === 'work' && (
+                <section className="admin-grid">
+                  <article className="admin-card admin-card-form">
+                    <div className="admin-section-heading">
+                      <div>
+                        <p className="admin-eyebrow">Add project</p>
+                        <h2>Any URL works</h2>
+                      </div>
+                      <p className="admin-caption">Signed in as {session.name}</p>
+                    </div>
 
                 <form className="admin-form" onSubmit={handleCreateProject}>
                   <label className="admin-field admin-field-wide">
@@ -824,7 +902,9 @@ function AdminPage() {
                 </div>
               </article>
             </section>
-          </>
+              )}
+            </div>
+          </div>
         )}
 
         {notice ? (
