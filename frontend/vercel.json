@@ -2,7 +2,7 @@
     "routes": [
         {
             "src": "/api/(.*)",
-            "dest": "https://filmyourfilm-78lq.vercel.app/api/$1"
+            "dest": "https://filmyourfilmwebsite.vercel.app/api/$1"
         },
         {
             "src": "/[^.]+",
