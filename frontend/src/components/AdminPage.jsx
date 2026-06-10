@@ -115,6 +115,14 @@ function AdminPage() {
   const [isSavingHeroVideo, setIsSavingHeroVideo] = useState(false);
   const [isLoadingHeroVideo, setIsLoadingHeroVideo] = useState(false);
 
+  useEffect(() => {
+    if (activeTab === 'ai') {
+      setFormState((prev) => ({ ...prev, isAi: true }));
+    } else if (activeTab === 'commercial') {
+      setFormState((prev) => ({ ...prev, isAi: false }));
+    }
+  }, [activeTab]);
+
   const hasLayoutChanges =
     createLayoutSignature(normalProjects) !== savedNormalLayoutSignature ||
     createLayoutSignature(aiProjects) !== savedAiLayoutSignature;
@@ -466,6 +474,27 @@ function AdminPage() {
     }
   };
 
+  const handleDeleteHeroVideo = async () => {
+    setIsSavingHeroVideo(true);
+    setErrorMessage("");
+    setNotice("");
+
+    try {
+      const data = await updateHeroSetting(session.token, "");
+      setHeroVideoUrl(data.heroVideoUrl || "");
+      setNotice("Hero video deleted.");
+    } catch (error) {
+      if (isAuthError(error.message)) {
+        handleLogout();
+        setErrorMessage("Your admin session expired. Sign in again.");
+      } else {
+        setErrorMessage(error.message);
+      }
+    } finally {
+      setIsSavingHeroVideo(false);
+    }
+  };
+
   return (
     <div className="admin-shell">
       <header className="admin-header">
@@ -529,11 +558,18 @@ function AdminPage() {
                 Hero Section Videos
               </button>
               <button 
-                className={`admin-button ${activeTab === 'work' ? '' : 'admin-button-muted'}`} 
-                onClick={() => setActiveTab('work')}
+                className={`admin-button ${activeTab === 'commercial' ? '' : 'admin-button-muted'}`} 
+                onClick={() => setActiveTab('commercial')}
                 style={{ justifyContent: "flex-start" }}
               >
-                Work Videos
+                TV Commercials
+              </button>
+              <button 
+                className={`admin-button ${activeTab === 'ai' ? '' : 'admin-button-muted'}`} 
+                onClick={() => setActiveTab('ai')}
+                style={{ justifyContent: "flex-start" }}
+              >
+                AI Videos
               </button>
             </aside>
             
@@ -548,6 +584,18 @@ function AdminPage() {
                        </div>
                      </div>
                      <form className="admin-form" onSubmit={handleSaveHeroVideo} style={{ marginTop: "1rem" }}>
+                       {heroVideoUrl && (
+                         <div style={{ marginBottom: "1.5rem" }}>
+                           <p className="admin-eyebrow" style={{ marginBottom: "0.5rem" }}>Current Video</p>
+                           <div style={{ position: "relative", width: "100%", paddingTop: "56.25%", backgroundColor: "#111", borderRadius: "8px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+                             <video 
+                               src={heroVideoUrl} 
+                               controls 
+                               style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover" }} 
+                             />
+                           </div>
+                         </div>
+                       )}
                        <label className="admin-field admin-field-wide">
                          <span>Video URL</span>
                          <input
@@ -557,15 +605,27 @@ function AdminPage() {
                            onChange={(e) => setHeroVideoUrl(e.target.value)}
                          />
                        </label>
-                       <button className="admin-button admin-field-wide" type="submit" disabled={isSavingHeroVideo}>
-                         {isSavingHeroVideo ? "Saving..." : "Save Settings"}
-                       </button>
+                       <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
+                         <button className="admin-button" type="submit" disabled={isSavingHeroVideo} style={{ flex: 1 }}>
+                           {isSavingHeroVideo ? "Saving..." : "Save Settings"}
+                         </button>
+                         {heroVideoUrl && (
+                           <button 
+                             className="admin-button admin-button-muted" 
+                             type="button" 
+                             onClick={handleDeleteHeroVideo}
+                             disabled={isSavingHeroVideo}
+                           >
+                             Delete Video
+                           </button>
+                         )}
+                       </div>
                      </form>
                    </article>
                  </section>
               )}
               
-              {activeTab === 'work' && (
+              {(activeTab === 'commercial' || activeTab === 'ai') && (
                 <section className="admin-grid">
                   <article className="admin-card admin-card-form">
                     <div className="admin-section-heading">
@@ -683,6 +743,7 @@ function AdminPage() {
                 </form>
               </article>
 
+              {activeTab === 'commercial' && (
               <article className="admin-card admin-card-list">
                 <div className="admin-section-heading">
                   <div>
@@ -792,7 +853,9 @@ function AdminPage() {
                   )}
                 </div>
               </article>
+              )}
 
+              {activeTab === 'ai' && (
               <article className="admin-card admin-card-list">
                 <div className="admin-section-heading">
                   <div>
@@ -901,6 +964,7 @@ function AdminPage() {
                   )}
                 </div>
               </article>
+              )}
             </section>
               )}
             </div>

@@ -82,50 +82,50 @@ function App() {
       {!isAdminRoute && <BlurryCursor />}
       <Routes>
         <Route path="/admin" element={<AdminPage />} />
-      <Route path="/work" element={<WorkPage />} />
-      <Route
-        path="*"
-        element={
-          <div className="app-shell">
-            {loading && (
-              <div className={`fullscreen-loader ${fade ? "fade-out" : ""}`}>
-                <img
-                  alt="Film Your Film"
-                  className="loader-logo-mark"
-                  src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
-                />
-              </div>
-            )}
+        <Route path="/work" element={<WorkPage />} />
+        <Route
+          path="*"
+          element={
+            <div className="app-shell">
+              {loading && (
+                <div className={`fullscreen-loader ${fade ? "fade-out" : ""}`}>
+                  <img
+                    alt="Film Your Film"
+                    className="loader-logo-mark"
+                    src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
+                  />
+                </div>
+              )}
 
-            <header className="site-header">
-              <a className="site-logo" href="#home">
-                <img
-                  alt="Film Your Film"
-                  className="site-logo-mark"
-                  src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
-                />
-              </a>
-              <nav className="site-nav">
-                <a href="#home">Home</a>
-                <a href="/work">Work</a>
-                <a href="#contact">Contact</a>
-              </nav>
-            </header>
+              <header className="site-header">
+                <a className="site-logo" href="#home">
+                  <img
+                    alt="Film Your Film"
+                    className="site-logo-mark"
+                    src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
+                  />
+                </a>
+                <nav className="site-nav">
+                  <a href="#home">Home</a>
+                  <a href="/work">WORKLINKS</a>
+                  <a href="#contact">Contact</a>
+                </nav>
+              </header>
 
-            <main className="site-main">
-              <HorizontalScroll onSelectProject={setActiveProject} loading={loading} />
-              <ClientGrid />
-              <Contact />
-            </main>
+              <main className="site-main">
+                <HorizontalScroll onSelectProject={setActiveProject} loading={loading} />
+                <ClientGrid />
+                <Contact />
+              </main>
 
-            <VideoModal
-              project={activeProject}
-              onClose={() => setActiveProject(null)}
-            />
-          </div>
-        }
-      />
-    </Routes>
+              <VideoModal
+                project={activeProject}
+                onClose={() => setActiveProject(null)}
+              />
+            </div>
+          }
+        />
+      </Routes>
     </>
   );
 }

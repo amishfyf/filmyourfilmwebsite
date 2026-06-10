@@ -86,7 +86,7 @@ function WorkPage() {
         <nav className="site-nav">
           <Link to="/">Home</Link>
           <a aria-current="page" href="#work-grid">
-            Work
+            WORKLINKS
           </a>
           <a href="/#contact">Contact</a>
         </nav>

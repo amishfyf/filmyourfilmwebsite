@@ -143,11 +143,11 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
       <div className="horizontal-track" ref={trackRef}>
         <section className="hero-section horizontal-panel" id="home" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
           {heroVideoUrl && (
-            <video 
-              autoPlay 
-              loop 
-              muted 
-              playsInline 
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
               src={heroVideoUrl}
               style={{
                 position: "absolute",
@@ -162,25 +162,25 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
               }}
             />
           )}
-          <div 
-            className="hero-content" 
-            style={{ 
-              position: "relative", 
-              zIndex: 1, 
-              display: "flex", 
-              flexDirection: "column", 
-              alignItems: "center", 
-              justifyContent: "center", 
-              width: "100%", 
-              height: "100%", 
+          <div
+            className="hero-content"
+            style={{
+              position: "relative",
+              zIndex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              height: "100%",
               textAlign: "center",
               gap: "2.5rem"
             }}
           >
             <h1 className="hero-title" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 900, fontSize: "clamp(4rem, 9vw, 8.5rem)", letterSpacing: "-0.03em", maxWidth: "1200px", margin: 0, lineHeight: 1 }}>
-              Lights, camera,<br />& AI
+              Lights, Camera,<br />and AI
             </h1>
-            
+
             <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
               <button
                 className="hero-action-btn"
@@ -216,10 +216,10 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
                   transition: "all 0.3s ease"
                 }}
               >
-                AI
+                AI Videos
               </button>
             </div>
-            
+
             <div className="scroll-indicator-horizontal" style={{ position: "absolute", bottom: "3rem", left: "50%", transform: "translateX(-50%)" }}>
               <span>Scroll to explore</span>
               <i className="fa-solid fa-arrow-right-long scroll-indicator-arrow"></i>
@@ -246,7 +246,7 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
 
                     <div className="bento-card-overlay" />
                     <div className="bento-card-title-wrap">
-                      
+
                       <h3 className="bento-card-meta">{item.title}</h3>
                     </div>
                   </div>
