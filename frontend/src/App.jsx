@@ -9,6 +9,8 @@ import ClientGrid from "./components/ClientGrid";
 import VideoModal from "./components/VideoModal";
 import WorkPage from "./components/WorkPage";
 import BlurryCursor from "./components/BlurryCursor";
+import SiteHeader from "./components/SiteHeader";
+import ContactPage from "./components/ContactPage";
 import "./App.css";
 
 function App() {
@@ -16,12 +18,14 @@ function App() {
   const normalizedPath = location.pathname.toLowerCase().replace(/\/+$/, "") || "/";
   const isAdminRoute = normalizedPath === "/admin";
   const isWorkRoute = normalizedPath === "/work";
+  const isContactRoute = normalizedPath === "/contact";
   const [activeProject, setActiveProject] = useState(null);
-  const [loading, setLoading] = useState(!isAdminRoute && !isWorkRoute);
+  const [loading, setLoading] = useState(!isAdminRoute && !isWorkRoute && !isContactRoute);
   const [fade, setFade] = useState(false);
+  const [projectsLoaded, setProjectsLoaded] = useState(false);
 
   useEffect(() => {
-    if (isAdminRoute || isWorkRoute) return;
+    if (isAdminRoute || isWorkRoute || isContactRoute) return;
 
     const lenis = new Lenis({
       autoRaf: true,
@@ -75,7 +79,7 @@ function App() {
       window.lenis = null;
       document.body.style.overflow = "";
     };
-  }, [isAdminRoute, isWorkRoute, loading]);
+  }, [isAdminRoute, isWorkRoute, isContactRoute, loading]);
 
   return (
     <>
@@ -83,6 +87,7 @@ function App() {
       <Routes>
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/work" element={<WorkPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route
           path="*"
           element={
@@ -97,23 +102,10 @@ function App() {
                 </div>
               )}
 
-              <header className="site-header">
-                <a className="site-logo" href="#home">
-                  <img
-                    alt="Film Your Film"
-                    className="site-logo-mark"
-                    src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
-                  />
-                </a>
-                <nav className="site-nav">
-                  <a href="#home">Home</a>
-                  <a href="/work">WORKLINKS</a>
-                  <a href="#contact">Contact</a>
-                </nav>
-              </header>
+              <SiteHeader />
 
               <main className="site-main">
-                <HorizontalScroll onSelectProject={setActiveProject} loading={loading} />
+                <HorizontalScroll onSelectProject={setActiveProject} loading={loading} onLoaded={() => setProjectsLoaded(true)} />
                 <ClientGrid />
                 <Contact />
               </main>

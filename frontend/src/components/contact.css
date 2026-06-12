@@ -48,7 +48,8 @@
 }
 
 .contact-whatsapp-link:hover span {
-  color: #25d366; /* WhatsApp Green */
+  color: #df2531;
+  /* WhatsApp Green */
   opacity: 0.9;
 }
 

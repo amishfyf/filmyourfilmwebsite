@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 const colors = [
-  "#c32d27",
-  "#f5c63f",
-  "#457ec4",
-  "#356fdb",
+  "#df253148",
+  "#df253170",
+  "#df2531",
+  "#fffff",
 ];
 
 export default function BlurryCursor() {
@@ -28,7 +28,7 @@ export default function BlurryCursor() {
       return;
     }
 
-    const isInsideAllowedSection = 
+    const isInsideAllowedSection =
       (target.closest("#home") !== null || target.closest("#contact") !== null) &&
       target.closest(".selector-btn-v") === null &&
       target.closest(".hero-action-btn") === null;
@@ -70,13 +70,13 @@ export default function BlurryCursor() {
       const target = e.target;
       if (!target) return;
 
-      const hoverable = target.closest("a") || 
-                        target.closest("button") || 
-                        target.closest(".bento-card") ||
-                        target.closest(".hero-title") ||
-                        target.closest(".contact-heading") ||
-                        target.closest(".work-page-contact-title") ||
-                        target.closest(".selector-btn-v");
+      const hoverable = target.closest("a") ||
+        target.closest("button") ||
+        target.closest(".bento-card") ||
+        target.closest(".hero-title") ||
+        target.closest(".contact-heading") ||
+        target.closest(".work-page-contact-title") ||
+        target.closest(".selector-btn-v");
 
       if (hoverable) {
         setIsActive(true);
@@ -87,13 +87,13 @@ export default function BlurryCursor() {
       const target = e.target;
       if (!target) return;
 
-      const hoverable = target.closest("a") || 
-                        target.closest("button") || 
-                        target.closest(".bento-card") ||
-                        target.closest(".hero-title") ||
-                        target.closest(".contact-heading") ||
-                        target.closest(".work-page-contact-title") ||
-                        target.closest(".selector-btn-v");
+      const hoverable = target.closest("a") ||
+        target.closest("button") ||
+        target.closest(".bento-card") ||
+        target.closest(".hero-title") ||
+        target.closest(".contact-heading") ||
+        target.closest(".work-page-contact-title") ||
+        target.closest(".selector-btn-v");
 
       if (hoverable) {
         setIsActive(false);

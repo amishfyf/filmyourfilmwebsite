@@ -14,9 +14,10 @@ import "./styles.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function HorizontalScroll({ onSelectProject, loading }) {
+export default function HorizontalScroll({ onSelectProject, loading, onLoaded }) {
   const wrapperRef = useRef(null);
   const trackRef = useRef(null);
+  const onLoadedCalledRef = useRef(false);
   const [projects, setProjects] = useState([]);
   const [status, setStatus] = useState("loading");
   const [errorMessage, setErrorMessage] = useState("");
@@ -45,6 +46,13 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
         setProjects([]);
         setErrorMessage(error.message || "Unable to load projects.");
         setStatus("error");
+        // Signal ready on error
+        if (!onLoadedCalledRef.current) {
+          onLoadedCalledRef.current = true;
+          setTimeout(() => {
+            if (onLoaded) onLoaded();
+          }, 100);
+        }
       }
     };
 
@@ -62,13 +70,19 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
   const hasTrackContent = status === "success" && activePanels.length > 0;
 
   const handleToggle = (type) => {
-    if (type === showcaseType) return;
-    setShowcaseType(type);
-    if (window.lenis) {
-      window.lenis.scrollTo(0, { immediate: true });
-    } else {
-      window.scrollTo(0, 0);
+    if (type !== showcaseType) {
+      setShowcaseType(type);
     }
+    
+    // Scroll down slightly to demonstrate horizontal sliding
+    setTimeout(() => {
+      const scrollTarget = window.innerHeight * 0.6; // Scroll down 60vh to slide in the first project
+      if (window.lenis) {
+        window.lenis.scrollTo(scrollTarget, { duration: 1.5 });
+      } else {
+        window.scrollTo({ top: scrollTarget, behavior: "smooth" });
+      }
+    }, 50);
   };
 
   useGSAP(
@@ -120,6 +134,15 @@ export default function HorizontalScroll({ onSelectProject, loading }) {
           animation: tween,
           scrub: 1.5,
           invalidateOnRefresh: true,
+          onRefresh: () => {
+            // Fire onLoaded after ScrollTrigger finishes its first layout pass
+            if (!onLoadedCalledRef.current) {
+              onLoadedCalledRef.current = true;
+              setTimeout(() => {
+                if (onLoaded) onLoaded();
+              }, 50);
+            }
+          },
         });
 
         return () => {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { fetchProjects } from "../services/projectsApi";
 import VideoModal from "./VideoModal";
+import SiteHeader from "./SiteHeader";
 import {
   getProjectMetaLabel,
   normalizeProjects,
@@ -74,23 +75,7 @@ function WorkPage() {
 
   return (
     <div className="work-page-shell">
-      <header className="site-header site-header-work">
-        <Link className="site-logo" to="/">
-          <img
-            alt="Film Your Film"
-            className="site-logo-mark"
-            src="https://cdn.prod.website-files.com/64d4cabf6efb73a26f743da1/6721fa0cfcccdb249886dfa3_Animation.gif"
-          />
-        </Link>
-
-        <nav className="site-nav">
-          <Link to="/">Home</Link>
-          <a aria-current="page" href="#work-grid">
-            WORKLINKS
-          </a>
-          <a href="/#contact">Contact</a>
-        </nav>
-      </header>
+      <SiteHeader />
 
       <main className="work-page-main">
         {status === "success" && projects.length ? (
@@ -198,12 +183,12 @@ function WorkPage() {
             {/* <div className="work-page-contact-blob"></div> */}
           </div>
 
-          <div className="work-page-footer">
+          {/* <div className="work-page-footer">
             <p className="work-page-footer-brand">filmyourfilm.com</p>
             <nav className="work-page-footer-nav">
               <Link to="/">Home</Link>
             </nav>
-          </div>
+          </div> */}
         </section>
       </main>
 
