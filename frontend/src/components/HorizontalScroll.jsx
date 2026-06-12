@@ -73,7 +73,7 @@ export default function HorizontalScroll({ onSelectProject, loading, onLoaded })
     if (type !== showcaseType) {
       setShowcaseType(type);
     }
-    
+
     // Scroll down slightly to demonstrate horizontal sliding
     setTimeout(() => {
       const scrollTarget = window.innerHeight * 0.6; // Scroll down 60vh to slide in the first project
@@ -132,7 +132,7 @@ export default function HorizontalScroll({ onSelectProject, loading, onLoaded })
             `+=${(trackRef.current.scrollWidth - window.innerWidth) * 0.5}`,
           pin: true,
           animation: tween,
-          scrub: 1.5,
+          scrub: 0.5,
           invalidateOnRefresh: true,
           onRefresh: () => {
             // Fire onLoaded after ScrollTrigger finishes its first layout pass
@@ -201,81 +201,64 @@ export default function HorizontalScroll({ onSelectProject, loading, onLoaded })
             }}
           >
             <h1 className="hero-title" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 900, fontSize: "clamp(4rem, 9vw, 8.5rem)", letterSpacing: "-0.03em", maxWidth: "1200px", margin: 0, lineHeight: 1 }}>
-              Lights, Camera,<br />and AI
+              Lights. Camera.<br />and AI.
             </h1>
 
-            <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+            <div className="hero-btn-group">
               <button
-                className="hero-action-btn"
+                className={`hero-toggle-btn ${showcaseType === "cinema" ? "active" : ""}`}
                 onClick={() => handleToggle("cinema")}
-                style={{
-                  padding: "1rem 2.5rem",
-                  borderRadius: "50px",
-                  border: showcaseType === "cinema" ? "1px solid rgba(255,255,255,0.8)" : "1px solid rgba(255,255,255,0.3)",
-                  background: showcaseType === "cinema" ? "rgba(255,255,255,0.1)" : "transparent",
-                  color: "#fff",
-                  fontSize: "1.1rem",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  backdropFilter: "blur(10px)",
-                  transition: "all 0.3s ease"
-                }}
               >
-                TV Commercial
+                <span className="hero-toggle-label">TV Commercials</span>
               </button>
               <button
-                className="hero-action-btn"
+                className={`hero-toggle-btn ${showcaseType === "ai" ? "active" : ""}`}
                 onClick={() => handleToggle("ai")}
-                style={{
-                  padding: "1rem 2.5rem",
-                  borderRadius: "50px",
-                  border: showcaseType === "ai" ? "1px solid rgba(255,255,255,0.8)" : "1px solid rgba(255,255,255,0.3)",
-                  background: showcaseType === "ai" ? "rgba(255,255,255,0.1)" : "transparent",
-                  color: "#fff",
-                  fontSize: "1.1rem",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  backdropFilter: "blur(10px)",
-                  transition: "all 0.3s ease"
-                }}
               >
-                AI Videos
+                <span className="hero-toggle-label">AI Films</span>
               </button>
             </div>
 
-            <div className="scroll-indicator-horizontal" style={{ position: "absolute", bottom: "3rem", left: "50%", transform: "translateX(-50%)" }}>
-              <span>Scroll to explore</span>
-              <i className="fa-solid fa-arrow-right-long scroll-indicator-arrow"></i>
+            <div className="scroll-cta" style={{ position: "absolute", bottom: "3rem", left: "50%", transform: "translateX(-50%)" }}>
+              <span className="scroll-cta-line" />
+              <span className="scroll-cta-text">Scroll to explore</span>
+              <i className="fa-solid fa-arrow-right-long scroll-cta-arrow"></i>
             </div>
           </div>
         </section>
 
         {status === "success" && activePanels.length ? (
-          activePanels.map((panel, index) => (
-            <section
-              key={`${showcaseType}-${panel.type}-${index}`}
-              className={`showcase-panel bento-column ${panel.type}`}
-              id={index === 0 ? "work" : undefined}
-            >
-              {panel.items.map((item) => {
-                return (
-                  <div
-                    key={item.id}
-                    className="bento-card"
-                    onClick={() => onSelectProject?.(item.raw)}
-                    role="presentation"
-                  >
-                    <ProjectPreviewMedia item={item} />
+          [
+            { category: "cinema", data: regularPanels },
+            { category: "ai", data: aiPanels }
+          ].map((group) => (
+            group.data.map((panel, index) => (
+              <section
+                key={`${group.category}-${panel.type}-${index}`}
+                className={`showcase-panel bento-column ${panel.type}`}
+                id={index === 0 && showcaseType === group.category ? "work" : undefined}
+                style={{ display: showcaseType === group.category ? "" : "none" }}
+              >
+                {panel.items.map((item) => {
+                  return (
+                    <div
+                      key={item.id}
+                      className="bento-card"
+                      onClick={() => onSelectProject?.(item.raw)}
+                      role="presentation"
+                    >
+                      <ProjectPreviewMedia item={item} />
 
-                    <div className="bento-card-overlay" />
-                    <div className="bento-card-title-wrap">
+                      <div className="bento-card-overlay" />
+                      <div className="bento-card-title-wrap">
 
-                      <h3 className="bento-card-meta">{item.title}</h3>
+                        <h3 className="bento-card-meta">{item.title}</h3>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </section>
+                  );
+                })}
+              </section>
+            ))
           ))
         ) : (
           <section

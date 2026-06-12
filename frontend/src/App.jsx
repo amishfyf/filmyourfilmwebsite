@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, Routes, Route } from "react-router";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 import AdminPage from "./components/AdminPage";
 import HorizontalScroll from "./components/HorizontalScroll";
 import Contact from "./components/Contact";
@@ -29,10 +33,12 @@ function App() {
 
     const lenis = new Lenis({
       autoRaf: true,
-      lerp: 0.1, // Adjust for smoothness
+      lerp: 0.1,
       duration: 1.2,
       smoothWheel: true,
     });
+
+    lenis.on('scroll', ScrollTrigger.update);
 
     window.lenis = lenis;
 

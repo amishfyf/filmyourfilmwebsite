@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 const colors = [
-  "#df253148",
-  "#df253170",
+  "#df253145",
+  "#df253165",
   "#df2531",
-  "#fffff",
+  "#fff",
+  "#000",
 ];
 
 export default function BlurryCursor() {
@@ -31,7 +32,7 @@ export default function BlurryCursor() {
     const isInsideAllowedSection =
       (target.closest("#home") !== null || target.closest("#contact") !== null) &&
       target.closest(".selector-btn-v") === null &&
-      target.closest(".hero-action-btn") === null;
+      target.closest(".hero-toggle-btn") === null;
 
     setIsVisible(isInsideAllowedSection);
 
@@ -138,7 +139,7 @@ export default function BlurryCursor() {
           }
         }
       `}</style>
-      {[...Array(4)].map((_, i) => (
+      {[...Array(5)].map((_, i) => (
         <div
           key={i}
           ref={(ref) => (circles.current[i] = ref)}
@@ -152,7 +153,7 @@ export default function BlurryCursor() {
             top: 0,
             left: 0,
             borderRadius: "50%",
-            mixBlendMode: "difference",
+            mixBlendMode: "normal",
             pointerEvents: "none",
           }}
         />

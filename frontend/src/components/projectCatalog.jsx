@@ -160,42 +160,78 @@ export function ProjectPreviewMedia({ item }) {
   const isGoogleDrive = item.sourceType === 'google-drive';
   const driveDirectUrl = isGoogleDrive ? getGoogleDriveDirectUrl(item.videoUrl) : '';
 
+  const [isVisible, setIsVisible] = useState(false);
+  const [hasBeenVisible, setHasBeenVisible] = useState(false);
+  const containerRef = useRef(null);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+        if (entry.isIntersecting) {
+          setHasBeenVisible(true);
+        }
+      },
+      { rootMargin: "200px" } // Preload slightly before entering viewport
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isVisible) {
+        videoRef.current.play().catch(() => {});
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isVisible]);
+
   return (
-    <div className="bento-card-media-shell">
+    <div className="bento-card-media-shell" ref={containerRef}>
       {shouldRenderDirectPreview ? (
         <video
-          autoPlay
+          ref={videoRef}
           className="bento-card-media"
           loop
           muted
           playsInline
           poster={item.thumbnailUrl || undefined}
           preload="metadata"
-          src={item.videoUrl}
+          src={hasBeenVisible ? item.videoUrl : ""}
         />
       ) : isGoogleDrive && driveDirectUrl ? (
         <video
-          autoPlay
+          ref={videoRef}
           className="bento-card-media"
           loop
           muted
           playsInline
           poster={item.thumbnailUrl || undefined}
           preload="metadata"
-          src={driveDirectUrl}
+          src={hasBeenVisible ? driveDirectUrl : ""}
         />
       ) : vimeoPreviewUrl ? (
         <div aria-hidden="true" className="bento-card-media bento-card-media-frame">
-          <iframe
-            allow="autoplay; fullscreen; picture-in-picture"
-            className="bento-card-media-embed"
-            src={vimeoPreviewUrl}
-            tabIndex="-1"
-            title={`${item.title} preview`}
-          ></iframe>
+          {hasBeenVisible && (
+            <iframe
+              allow="autoplay; fullscreen; picture-in-picture"
+              className="bento-card-media-embed"
+              src={vimeoPreviewUrl}
+              tabIndex="-1"
+              title={`${item.title} preview`}
+              loading="lazy"
+            ></iframe>
+          )}
         </div>
       ) : item.thumbnailUrl ? (
-        <img alt={`${item.title} thumbnail`} className="bento-card-media" src={item.thumbnailUrl} />
+        <img alt={`${item.title} thumbnail`} className="bento-card-media" src={hasBeenVisible ? item.thumbnailUrl : ""} loading="lazy" />
       ) : (
         <div className="bento-card-fallback" />
       )}
