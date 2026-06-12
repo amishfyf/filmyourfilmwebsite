@@ -60,7 +60,7 @@ html {
 
 .bento-card {
   background-color: #1a1a1a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(17, 17, 17, 0.08);
   border-radius: var(--panel-radius);
   overflow: hidden;
   position: relative;
@@ -505,7 +505,7 @@ html {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -575,6 +575,7 @@ html {
     opacity: 0;
     transform: translateX(-50%) translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
@@ -584,7 +585,7 @@ html {
 .scroll-cta-line {
   width: 40px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5));
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5));
   position: relative;
   overflow: hidden;
 }
@@ -601,9 +602,17 @@ html {
 }
 
 @keyframes lineSweep {
-  0% { left: -100%; }
-  50% { left: 100%; }
-  100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+
+  50% {
+    left: 100%;
+  }
+
+  100% {
+    left: 100%;
+  }
 }
 
 .scroll-cta-text {
@@ -622,10 +631,13 @@ html {
 }
 
 @keyframes arrowBounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0);
     opacity: 0.5;
   }
+
   50% {
     transform: translateX(8px);
     opacity: 1;
