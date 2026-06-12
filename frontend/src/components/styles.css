@@ -642,6 +642,7 @@ html {
     height: 100dvh !important;
     min-height: 100dvh !important;
     justify-content: center !important;
+    margin-bottom: 1rem;
   }
 
   .hero-left {
