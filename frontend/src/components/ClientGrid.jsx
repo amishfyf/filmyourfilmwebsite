@@ -77,7 +77,7 @@ export default function ClientGrid() {
 
   return (
     <section className="client-section" id="clients">
-      <h2 className="client-heading" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 900, fontSize: "clamp(3rem, 9vw, 6.5rem)", marginBottom: "3rem", letterSpacing: "-0.03em", maxWidth: "1200px", margin: 0, lineHeight: 1 }}>Our Clients</h2>
+      <h2 className="client-heading" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 900, fontSize: "clamp(3rem, 9vw, 6.5rem)", marginBottom: "4rem", letterSpacing: "-0.03em", maxWidth: "1200px", margin: 0, lineHeight: 1 }}>Our Clients</h2>
       <div className="client-grid">
         {cells.map(cell => (
           <div key={cell.id} className="client-cell">

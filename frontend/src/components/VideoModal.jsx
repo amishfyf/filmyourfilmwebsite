@@ -86,16 +86,7 @@ function VideoModal({ project, onClose }) {
           </div>
 
           <div className="video-modal-actions">
-            {videoUrl ? (
-              <a
-                className="video-modal-close"
-                href={videoUrl}
-                rel="noreferrer"
-                target="_blank"
-              >
-                Open source
-              </a>
-            ) : null}
+
 
             <button
               className="video-modal-close"

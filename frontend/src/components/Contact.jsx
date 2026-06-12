@@ -27,16 +27,18 @@ export default function Contact() {
 
   return (
     <section className="contact-wrapper" id="contact" ref={containerRef}>
-      <div className="contact-left animate-up" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 900, fontSize: "clamp(2rem, 5vw, 4.5rem)", letterSpacing: "-0.03em", maxWidth: "800px", margin: 0, lineHeight: 1 }} >
-        <h1 >
+      <div className="contact-left animate-up"  >
+        <h1 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: "clamp(2rem, 5vw, 4.5rem)", letterSpacing: "-0.03em", maxWidth: "600px", margin: 0, lineHeight: 1 }} >
           Got a project in mind?{" "}
+
           <a
             href="https://wa.me/919560699224?text=Hey%20Film%20your%20Film%2C%20lets%20talk%20on%20our%20Project"
             target="_blank"
             rel="noreferrer"
             className="contact-whatsapp-link"
+
           >
-            <span>Let&apos;s talk</span>
+            <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 900, fontSize: "clamp(2rem, 5vw, 4.5rem)", letterSpacing: "-0.03em", maxWidth: "800px", margin: 0, lineHeight: 1 }}>Let&apos;s talk</span>
           </a>
         </h1>
       </div>
